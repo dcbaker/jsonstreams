@@ -72,6 +72,19 @@ __all__ = [
 ]
 
 
+class JSONStreamsError(Exception):
+    """Base exception for jsonstreams."""
+
+
+class StreamClosedError(JSONStreamsError):
+    """Error raised when writing into a closed Element."""
+
+
+def _raise(exc, *args, **kwargs):  # pylint: disable=unused-argument
+    """helper to raise an exception."""
+    raise exc
+
+
 class Open(object):
     """A helper to allow subelements to be used as context managers."""
 
@@ -150,11 +163,28 @@ class Object(object):
         self.__write_key(key)
         self.__write(self.__encoder.encode(value))
 
-    def close(self):
+    def close(self):  # pylint: disable=method-hidden
+        """Close the Object.
+
+        Once this method is closed calling any of the public methods will
+        result in an StreamClosedError being raised.
+        """
         if self.__indent:
             self.__write('\n')
         self.__baseindent -= 1
         self.__write('}', indent=True)
+
+        self.write = functools.partial(
+            _raise, StreamClosedError('Cannot write into a closed object!'))
+        self.close = functools.partial(
+            _raise,
+            StreamClosedError('Cannot close an already closed object!'))
+        self.subarray = functools.partial(
+            _raise,
+            StreamClosedError('Cannot open a subarray of a closed object!'))
+        self.subobject = functools.partial(
+            _raise,
+            StreamClosedError('Cannot open a subobject of a closed object!'))
 
     def __enter__(self):
         return self
@@ -203,12 +233,28 @@ class Array(object):
             self.__write(',', newline=True)
         self.__write(self.__encoder.encode(value), indent=self.__indent)
 
-    def close(self):
-        """Close the group."""
+    def close(self):  # pylint: disable=method-hidden
+        """Close the Object.
+
+        Once this method is closed calling any of the public methods will
+        result in an StreamClosedError being raised.
+        """
         if self.__indent:
             self.__write('\n')
         self.__baseindent -= 1
         self.__write(']', indent=self.__indent)
+
+        self.write = functools.partial(
+            _raise, StreamClosedError('Cannot write into a closed array!'))
+        self.close = functools.partial(
+            _raise,
+            StreamClosedError('Cannot close an already closed array!'))
+        self.subarray = functools.partial(
+            _raise,
+            StreamClosedError('Cannot open a subarray of a closed array!'))
+        self.subobject = functools.partial(
+            _raise,
+            StreamClosedError('Cannot open a subobject of a closed array!'))
 
     def __enter__(self):
         return self

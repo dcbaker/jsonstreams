@@ -87,14 +87,6 @@ class TestObject(object):
         with open('foo', 'r') as f:
             assert f.read() == '{'
 
-    def test_close(self):
-        with open('foo', 'w') as f:
-            test = jsonstreams.Object(f, 0, 0, _ENCODER)
-            test.close()
-
-        with open('foo', 'r') as f:
-            assert f.read() == '{}'
-
     def test_context_manager(self):
         with open('foo', 'w') as f:
             with jsonstreams.Object(f, 0, 0, _ENCODER) as _:
@@ -294,6 +286,52 @@ class TestObject(object):
                         ]
                     }""")
 
+    class TestClose(object):
+
+        @pytest.fixture(autouse=True)
+        def chdir(self, tmpdir):
+            tmpdir.chdir()
+
+        def test_basic(self):
+            with open('foo', 'w') as f:
+                test = jsonstreams.Object(f, 0, 0, _ENCODER)
+                test.close()
+
+            with open('foo', 'r') as f:
+                assert f.read() == '{}'
+
+        def test_close(self):
+            with open('foo', 'w') as f:
+                test = jsonstreams.Object(f, 0, 0, _ENCODER)
+                test.close()
+
+                with pytest.raises(jsonstreams.StreamClosedError):
+                    test.write('foo', 'bar')
+
+        def test_write(self):
+            with open('foo', 'w') as f:
+                test = jsonstreams.Object(f, 0, 0, _ENCODER)
+                test.close()
+
+                with pytest.raises(jsonstreams.StreamClosedError):
+                    test.close()
+
+        def test_subarray(self):
+            with open('foo', 'w') as f:
+                test = jsonstreams.Object(f, 0, 0, _ENCODER)
+                test.close()
+
+                with pytest.raises(jsonstreams.StreamClosedError):
+                    test.subarray('foo')
+
+        def test_subobject(self):
+            with open('foo', 'w') as f:
+                test = jsonstreams.Object(f, 0, 0, _ENCODER)
+                test.close()
+
+                with pytest.raises(jsonstreams.StreamClosedError):
+                    test.subobject('foo')
+
 
 class TestArray(object):
 
@@ -307,14 +345,6 @@ class TestArray(object):
 
         with open('foo', 'r') as f:
             assert f.read() == '['
-
-    def test_close(self):
-        with open('foo', 'w') as f:
-            test = jsonstreams.Array(f, 0, 0, _ENCODER)
-            test.close()
-
-        with open('foo', 'r') as f:
-            assert f.read() == '[]'
 
     def test_context_manager(self):
         with open('foo', 'w') as f:
@@ -510,3 +540,49 @@ class TestArray(object):
                             "foo"
                         ]
                     ]""")
+
+    class TestClose(object):
+
+        @pytest.fixture(autouse=True)
+        def chdir(self, tmpdir):
+            tmpdir.chdir()
+
+        def test_basic(self):
+            with open('foo', 'w') as f:
+                test = jsonstreams.Array(f, 0, 0, _ENCODER)
+                test.close()
+
+            with open('foo', 'r') as f:
+                assert f.read() == '[]'
+
+        def test_close(self):
+            with open('foo', 'w') as f:
+                test = jsonstreams.Array(f, 0, 0, _ENCODER)
+                test.close()
+
+                with pytest.raises(jsonstreams.StreamClosedError):
+                    test.write('foo')
+
+        def test_write(self):
+            with open('foo', 'w') as f:
+                test = jsonstreams.Array(f, 0, 0, _ENCODER)
+                test.close()
+
+                with pytest.raises(jsonstreams.StreamClosedError):
+                    test.close()
+
+        def test_subarray(self):
+            with open('foo', 'w') as f:
+                test = jsonstreams.Array(f, 0, 0, _ENCODER)
+                test.close()
+
+                with pytest.raises(jsonstreams.StreamClosedError):
+                    test.subarray()
+
+        def test_subobject(self):
+            with open('foo', 'w') as f:
+                test = jsonstreams.Array(f, 0, 0, _ENCODER)
+                test.close()
+
+                with pytest.raises(jsonstreams.StreamClosedError):
+                    test.subobject()
