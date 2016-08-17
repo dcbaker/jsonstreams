@@ -33,12 +33,12 @@ with open(path.join(here, 'README.rst'), encoding='utf-8') as f:
 
 setup(
     name='jsonstreams',
-    version='0.1.0',
+    version='0.1.1',
     description='A JSON streaming writer',
     long_description=long_description,
     url='https://github.com/dcbaker/jsonstreams',
     author='Dylan Baker',
-    author_email='dylan@pnwbakers',
+    author_email='dylan@pnwbakers.com',
     license='MIT',
     classifiers=[
         'Development Status :: 3 - Alpha',
