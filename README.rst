@@ -36,9 +36,8 @@ corrected.
 
 It is possible to write any value that the encoder (json.JSONEncoder by
 default) can encode, so iterating over lists or dictionaries to write them in
-is unnecessary
+is unnecessary::
 
-::
     mylist = list(range(10))
     mydict = {a, b, for a in range(10), for b in 'abcdefghij'}
 
