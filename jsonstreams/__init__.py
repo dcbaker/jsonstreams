@@ -80,6 +80,84 @@ class StreamClosedError(JSONStreamsError):
     """Error raised when writing into a closed Element."""
 
 
+class BaseWriter(object):
+    """Private class for writing things."""
+
+    def __init__(self, fd, indent, baseindent, encoder):
+        self.fd = fd  # pylint: disable=invalid-name
+        self.indent = indent
+        self.baseindent = baseindent
+        self.encoder = encoder
+
+        self.write = self._write_no_comma
+
+        if indent:
+            self.write_comma_literal = functools.partial(
+                self.raw_write, ',', newline=True)
+        else:
+            self.write_comma_literal = functools.partial(self.raw_write, ', ')
+
+    @property
+    def comma(self):
+        return self.write == self._write_comma
+
+    def _indent(self):
+        return ' ' * self.baseindent * self.indent
+
+    def raw_write(self, value, indent=False, newline=False):
+        if indent:
+            self.fd.write(self._indent())
+        self.fd.write(value)
+        if newline:
+            self.fd.write('\n')
+
+    def _write_no_comma(self):
+        """Baseish class."""
+
+    def _write_comma(self):
+        """Baseish class."""
+
+    def set_comma(self):
+        # replace with the comma version, removeing the need for extra if
+        # statements.
+        self.write = self._write_comma
+
+
+class ObjectWriter(BaseWriter):
+
+    def write_key(self, key):
+        self.raw_write(self.encoder.encode(key), indent=self.indent)
+        self.raw_write(': ')
+
+    def _write_no_comma(self, key, value):  # pylint: disable=arguments-differ
+        """Write without a comma."""
+        self.write_key(key)
+        self.raw_write(self.encoder.encode(value))
+
+        # replace with the comma version, removeing the need for extra if
+        # statements.
+        self.write = self._write_comma
+
+    def _write_comma(self, key, value):
+        """Write with a comma."""
+        self.write_comma_literal()
+        self.write_key(key)
+        self.raw_write(self.encoder.encode(value))
+
+
+class ArrayWriter(BaseWriter):
+
+    def _write_no_comma(self, value):  # pylint: disable=arguments-differ
+        """Write without a comma."""
+        self.raw_write(self.encoder.encode(value), indent=self.indent)
+        self.set_comma()
+
+    def _write_comma(self, value):
+        """Write with a comma."""
+        self.write_comma_literal()
+        self.raw_write(self.encoder.encode(value), indent=self.indent)
+
+
 def _raise(exc, *args, **kwargs):  # pylint: disable=unused-argument
     """helper to raise an exception."""
     raise exc
@@ -88,11 +166,7 @@ def _raise(exc, *args, **kwargs):  # pylint: disable=unused-argument
 class Open(object):
     """A helper to allow subelements to be used as context managers."""
 
-    def __init__(self, initializer, writer=None, key=None):
-        if writer:
-            assert key is not None
-            writer(key)
-
+    def __init__(self, initializer):
         self.__inst = initializer()
         self.close = self.__inst.close
         self.subarray = self.__inst.subarray
@@ -111,59 +185,28 @@ class Open(object):
 class Object(object):
     """A streaming array representation."""
 
-    def __init__(self, fd, indent, baseindent, encoder, _indent=True):
-        self.__fd = fd
-        self.__indent = indent
-        self.__baseindent = copy.copy(baseindent)
-        self.__write('{', indent=_indent, newline=self.__indent)
-        self.__baseindent += 1
-        self.__encoder = encoder
+    def __init__(self, fd, indent, baseindent, encoder, _indent=False):
+        self._writer = ObjectWriter(fd, indent, baseindent, encoder)
+        self._writer.raw_write('{', indent=_indent, newline=indent)
+        self._writer.baseindent += 1
 
-        # This does a rather clever hack to make the comma write free of ifs
-        # using polymorphism. Basically after the method below writes, and then
-        # replaces it self with a version that adds a comma.
-        self.write = self.__write_no_comma
+    def _sub(self, jtype, key):
+        if self._writer.comma:
+            self._writer.write_comma_literal()
+        self._writer.set_comma()
+        self._writer.write_key(key)
+        return Open(functools.partial(
+            jtype, self._writer.fd, self._writer.indent,
+            self._writer.baseindent, self._writer.encoder, _indent=False))
 
-        self.subobject = functools.partial(
-            Open,
-            functools.partial(Object, self.__fd, self.__indent,
-                              self.__baseindent, self.__encoder, False),
-            self.__write_key)
+    def subobject(self, key):  # pylint: disable=method-hidden
+        return self._sub(Object, key)
 
-        self.subarray = functools.partial(
-            Open,
-            functools.partial(Array, self.__fd, self.__indent,
-                              self.__baseindent, self.__encoder, False),
-            self.__write_key)
+    def subarray(self, key):  # pylint: disable=method-hidden
+        return self._sub(Array, key)
 
-    def __write(self, value, indent=False, newline=False):
-        if indent:
-            self.__fd.write(' ' * self.__baseindent * self.__indent)
-        self.__fd.write(value)
-        if newline:
-            self.__fd.write('\n')
-
-    def __write_key(self, key):
-        self.__write(self.__encoder.encode(key), indent=self.__indent)
-        self.__write(': ')
-
-    def __write_no_comma(self, key, value):
-        """Write without a comma."""
-        self.__write_key(key)
-        self.__write(self.__encoder.encode(value))
-
-        # replace with the comma version, removeing the need for extra if
-        # statements.
-        self.write = self.__write_comma
-
-    def __write_comma(self, key, value):
-        """Write with a comma."""
-        if not self.__indent:
-            self.__write(', ')
-        else:
-            self.__write(',', newline=True)
-        self.__write_key(key)
-        self.__write(self.__encoder.encode(value))
+    def write(self, key, value):  # pylint: disable=method-hidden
+        return self._writer.write(key, value)
 
     def close(self):  # pylint: disable=method-hidden
         """Close the Object.
@@ -171,10 +214,10 @@ class Object(object):
         Once this method is closed calling any of the public methods will
         result in an StreamClosedError being raised.
         """
-        if self.__indent:
-            self.__write('\n')
-        self.__baseindent -= 1
-        self.__write('}', indent=True)
+        if self._writer.indent:
+            self._writer.raw_write('\n')
+        self._writer.baseindent -= 1
+        self._writer.raw_write('}', indent=True)
 
         self.write = functools.partial(
             _raise, StreamClosedError('Cannot write into a closed object!'))
@@ -198,42 +241,27 @@ class Object(object):
 class Array(object):
     """A streaming array representation."""
 
-    def __init__(self, fd, indent, baseindent, encoder, _indent=True):
-        self.__fd = fd
-        self.__indent = indent
-        self.__baseindent = copy.copy(baseindent)
-        self.__write('[', indent=_indent, newline=self.__indent)
-        self.__baseindent += 1
-        self.__encoder = encoder
+    def __init__(self, fd, indent, baseindent, encoder, _indent=False):
+        self._writer = ArrayWriter(fd, indent, baseindent, encoder)
+        self._writer.raw_write('[', indent=_indent, newline=indent)
+        self._writer.baseindent += 1
 
-        self.write = self.__write_no_comma
-        self.subobject = functools.partial(
-            Open,
-            functools.partial(Object, self.__fd, self.__indent,
-                              self.__baseindent, self.__encoder))
+    def _sub(self, jtype):
+        if self._writer.comma:
+            self._writer.write_comma_literal()
+        self._writer.set_comma()
+        return Open(functools.partial(
+            jtype, self._writer.fd, self._writer.indent,
+            self._writer.baseindent, self._writer.encoder, _indent=True))
 
-        self.subarray = functools.partial(
-            Open,
-            functools.partial(Array, self.__fd, self.__indent,
-                              self.__baseindent, self.__encoder))
+    def subobject(self):  # pylint: disable=method-hidden
+        return self._sub(Object)
 
-    def __write(self, value, indent=False, newline=False):
-        if indent:
-            self.__fd.write(' ' * self.__baseindent * self.__indent)
-        self.__fd.write(value)
-        if newline:
-            self.__fd.write('\n')
+    def subarray(self):  # pylint: disable=method-hidden
+        return self._sub(Array)
 
-    def __write_no_comma(self, value):
-        self.__write(self.__encoder.encode(value), indent=self.__indent)
-        self.write = self.__write_comma
-
-    def __write_comma(self, value):
-        if not self.__indent:
-            self.__write(', ')
-        else:
-            self.__write(',', newline=True)
-        self.__write(self.__encoder.encode(value), indent=self.__indent)
+    def write(self, value):  # pylint: disable=method-hidden
+        return self._writer.write(value)
 
     def close(self):  # pylint: disable=method-hidden
         """Close the Object.
@@ -241,10 +269,10 @@ class Array(object):
         Once this method is closed calling any of the public methods will
         result in an StreamClosedError being raised.
         """
-        if self.__indent:
-            self.__write('\n')
-        self.__baseindent -= 1
-        self.__write(']', indent=self.__indent)
+        if self._writer.indent:
+            self._writer.raw_write('\n')
+        self._writer.baseindent -= 1
+        self._writer.raw_write(']', indent=True)
 
         self.write = functools.partial(
             _raise, StreamClosedError('Cannot write into a closed array!'))
