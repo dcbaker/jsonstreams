@@ -1,0 +1,43 @@
+version: "{branch}-{build}"
+cache:
+    - '%LOCALAPPDATA%\pip\Cache'
+build: off
+
+skip_tags: true
+
+shallow_clone: true
+clone_depth: 100
+
+environment:
+    matrix:
+        - PYTHON: C:\Python27
+          TOXENV: "py27"
+
+        - PYTHON: C:\Python33
+          TOXENV: "py33"
+
+        - PYTHON: C:\Python34
+          TOXENV: "py34"
+
+        - PYTHON: C:\Python35
+          TOXENV: "py35"
+
+        - PYTHON: C:\Python35
+          TOXENV: "pylint"
+
+        - PYTHON: C:\Python35
+          TOXENV: "style"
+
+init:
+    - ps: echo $env:TOXENV
+    - ps: ls C:\Python*
+
+install:
+    - '%PYTHON%\Scripts\pip install tox'
+
+test_script:
+    - '%PYTHON%\Scripts\tox.exe'
+
+on_failure:
+    - ps: dir "env:"
+    - ps: get-content .tox\*\log\*
