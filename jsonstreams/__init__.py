@@ -94,10 +94,12 @@ class Open(object):
             writer(key)
 
         self.__inst = initializer()
-        self.write = self.__inst.write
         self.close = self.__inst.close
         self.subarray = self.__inst.subarray
         self.subobject = self.__inst.subobject
+
+    def write(self, *args, **kwargs):
+        self.__inst.write(*args, **kwargs)
 
     def __enter__(self):
         return self.__inst
