@@ -71,6 +71,8 @@ __all__ = [
     'Stream',
 ]
 
+__version__ = '0.1.2'
+
 
 class JSONStreamsError(Exception):
     """Base exception for jsonstreams."""
