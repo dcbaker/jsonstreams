@@ -5,6 +5,9 @@ JSONStreams
 .. image:: https://travis-ci.org/dcbaker/jsonstreams.svg?branch=master
     :target: https://travis-ci.org/dcbaker/jsonstreams
 
+.. image:: https://ci.appveyor.com/api/projects/status/4umkvc9thitacbf9/branch/master?svg=true
+    :target: https://ci.appveyor.com/project/dcbaker/jsonstreams
+
 
 Description
 ###########
