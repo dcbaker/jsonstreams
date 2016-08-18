@@ -304,7 +304,9 @@ class Stream(object):
 
         self.subobject = self.__inst.subobject
         self.subarray = self.__inst.subarray
-        self.write = self.__inst.write
+
+    def write(self, *args, **kwargs):
+        self.__inst.write(*args, **kwargs)
 
     def close(self):
         """Close the root element and the file."""

@@ -73,6 +73,15 @@ class TestStream(object):
         a.close()
         s.close()
 
+    def test_write_two(self):
+        with open('foo', 'w') as f:
+            with jsonstreams.Stream('foo', 'object') as s:
+                s.write('foo', 'bar')
+                s.write('bar', 'foo')
+
+        with open('foo', 'r') as f:
+            assert f.read() == '{"foo": "bar", "bar": "foo"}'
+
 
 class TestObject(object):
 
