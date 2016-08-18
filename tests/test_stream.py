@@ -82,6 +82,27 @@ class TestStream(object):
         with open('foo', 'r') as f:
             assert f.read() == '{"foo": "bar", "bar": "foo"}'
 
+    def test_subobject(self):
+        with open('foo', 'w') as f:
+            with jsonstreams.Stream('foo', 'object') as s:
+                s.write('foo', 'bar')
+                with s.subobject('bar') as b:
+                    b.write(1, 'foo')
+
+        with open('foo', 'r') as f:
+            assert f.read() == '{"foo": "bar", "bar": {1: "foo"}}'
+
+    def test_subarray(self):
+        with open('foo', 'w') as f:
+            with jsonstreams.Stream('foo', 'array') as s:
+                s.write('foo')
+                with s.subarray() as b:
+                    b.write(1)
+                    b.write(2)
+
+        with open('foo', 'r') as f:
+            assert f.read() == '["foo", [1, 2]]'
+
 
 class TestObject(object):
 
@@ -184,6 +205,7 @@ class TestObject(object):
                 assert f.read() == expected
 
     class TestSubobject(object):
+        """Tests for the suboboject method."""
 
         @pytest.fixture(autouse=True)
         def chdir(self, tmpdir):
@@ -238,8 +260,105 @@ class TestObject(object):
                             "foo": "bar"
                         }
                     }""")
+
+        class TestNestedContextManager(object):
+            """Test various nested configurations with context managers."""
+
+            def test_inner(self):
+                with open('foo', 'w') as f:
+                    with jsonstreams.Object(f, 0, 0, _ENCODER) as s:
+                        with s.subobject('ook') as p:
+                            p.write('foo', 'bar')
+                            p.write(1, 'bar')
+
+                with open('foo', 'r') as f:
+                    assert f.read() == '{"ook": {"foo": "bar", 1: "bar"}}'
+
+            def test_outer_inner(self):
+                with open('foo', 'w') as f:
+                    with jsonstreams.Object(f, 0, 0, _ENCODER) as s:
+                        s.write('foo', 'bar')
+                        with s.subobject('ook') as p:
+                            p.write(1, 'bar')
+
+                with open('foo', 'r') as f:
+                    assert f.read() == '{"foo": "bar", "ook": {1: "bar"}}'
+
+            def test_inner_outer(self):
+                with open('foo', 'w') as f:
+                    with jsonstreams.Object(f, 0, 0, _ENCODER) as s:
+                        with s.subobject('ook') as p:
+                            p.write(1, 'bar')
+                        s.write('foo', 'bar')
+
+                with open('foo', 'r') as f:
+                    assert f.read() == '{"ook": {1: "bar"}, "foo": "bar"}'
+
+            def test_outer_inner_outer(self):
+                with open('foo', 'w') as f:
+                    with jsonstreams.Object(f, 0, 0, _ENCODER) as s:
+                        s.write(1, 'bar')
+                        with s.subobject('ook') as p:
+                            p.write(1, 'bar')
+                        s.write('foo', 'bar')
+
+                with open('foo', 'r') as f:
+                    assert f.read() == \
+                        '{1: "bar", "ook": {1: "bar"}, "foo": "bar"}'
+
+        class TestNested(object):
+            """Test various nested configurations."""
+
+            def test_inner(self):
+                with open('foo', 'w') as f:
+                    s = jsonstreams.Object(f, 0, 0, _ENCODER)
+                    p = s.subobject(2)
+                    p.write(1, 'bar')
+                    p.close()
+                    s.close()
+
+                with open('foo', 'r') as f:
+                    assert f.read() == '{2: {1: "bar"}}'
+
+            def test_outer_inner(self):
+                with open('foo', 'w') as f:
+                    s = jsonstreams.Object(f, 0, 0, _ENCODER)
+                    s.write(1, 'foo')
+                    p = s.subobject(2)
+                    p.write(1, 'bar')
+                    p.close()
+                    s.close()
+
+                with open('foo', 'r') as f:
+                    assert f.read() == '{1: "foo", 2: {1: "bar"}}'
+
+            def test_inner_outer(self):
+                with open('foo', 'w') as f:
+                    s = jsonstreams.Object(f, 0, 0, _ENCODER)
+                    p = s.subobject(2)
+                    p.write(1, 'bar')
+                    p.close()
+                    s.write(1, 'foo')
+                    s.close()
+
+                with open('foo', 'r') as f:
+                    assert f.read() == '{2: {1: "bar"}, 1: "foo"}'
+
+            def test_outer_inner_outer(self):
+                with open('foo', 'w') as f:
+                    s = jsonstreams.Object(f, 0, 0, _ENCODER)
+                    s.write(1, 'foo')
+                    p = s.subobject(2)
+                    p.write(1, 'bar')
+                    p.close()
+                    s.write(3, 'foo')
+                    s.close()
+
+                with open('foo', 'r') as f:
+                    assert f.read() == '{1: "foo", 2: {1: "bar"}, 3: "foo"}'
 
     class TestSubarray(object):
+        """Tests for the subarray method."""
 
         @pytest.fixture(autouse=True)
         def chdir(self, tmpdir):
@@ -294,6 +413,102 @@ class TestObject(object):
                             "foo"
                         ]
                     }""")
+
+        class TestNestedContextManager(object):
+            """Test various nested configurations with context managers."""
+
+            def test_inner(self):
+                with open('foo', 'w') as f:
+                    with jsonstreams.Object(f, 0, 0, _ENCODER) as s:
+                        with s.subarray('ook') as p:
+                            p.write('foo')
+                            p.write(1)
+
+                with open('foo', 'r') as f:
+                    assert f.read() == '{"ook": ["foo", 1]}'
+
+            def test_outer_inner(self):
+                with open('foo', 'w') as f:
+                    with jsonstreams.Object(f, 0, 0, _ENCODER) as s:
+                        s.write('foo', 'bar')
+                        with s.subarray('ook') as p:
+                            p.write(1)
+
+                with open('foo', 'r') as f:
+                    assert f.read() == '{"foo": "bar", "ook": [1]}'
+
+            def test_inner_outer(self):
+                with open('foo', 'w') as f:
+                    with jsonstreams.Object(f, 0, 0, _ENCODER) as s:
+                        with s.subarray('ook') as p:
+                            p.write(1)
+                        s.write('foo', 'bar')
+
+                with open('foo', 'r') as f:
+                    assert f.read() == '{"ook": [1], "foo": "bar"}'
+
+            def test_outer_inner_outer(self):
+                with open('foo', 'w') as f:
+                    with jsonstreams.Object(f, 0, 0, _ENCODER) as s:
+                        s.write(1, 'bar')
+                        with s.subarray('ook') as p:
+                            p.write(1)
+                        s.write('foo', 'bar')
+
+                with open('foo', 'r') as f:
+                    assert f.read() == \
+                        '{1: "bar", "ook": [1], "foo": "bar"}'
+
+        class TestNested(object):
+            """Test various nested configurations."""
+
+            def test_inner(self):
+                with open('foo', 'w') as f:
+                    s = jsonstreams.Object(f, 0, 0, _ENCODER)
+                    p = s.subarray(2)
+                    p.write(1)
+                    p.close()
+                    s.close()
+
+                with open('foo', 'r') as f:
+                    assert f.read() == '{2: [1]}'
+
+            def test_outer_inner(self):
+                with open('foo', 'w') as f:
+                    s = jsonstreams.Object(f, 0, 0, _ENCODER)
+                    s.write(1, 'foo')
+                    p = s.subarray(2)
+                    p.write(1)
+                    p.close()
+                    s.close()
+
+                with open('foo', 'r') as f:
+                    assert f.read() == '{1: "foo", 2: [1]}'
+
+            def test_inner_outer(self):
+                with open('foo', 'w') as f:
+                    s = jsonstreams.Object(f, 0, 0, _ENCODER)
+                    p = s.subarray(2)
+                    p.write(1)
+                    p.close()
+                    s.write(1, 'foo')
+                    s.close()
+
+                with open('foo', 'r') as f:
+                    assert f.read() == '{2: [1], 1: "foo"}'
+
+            def test_outer_inner_outer(self):
+                with open('foo', 'w') as f:
+                    s = jsonstreams.Object(f, 0, 0, _ENCODER)
+                    s.write(1, 'foo')
+                    p = s.subarray(2)
+                    p.write(1)
+                    p.close()
+                    s.write(3, 'foo')
+                    s.close()
+
+                with open('foo', 'r') as f:
+                    assert f.read() == '{1: "foo", 2: [1], 3: "foo"}'
 
     class TestClose(object):
 
@@ -494,6 +709,102 @@ class TestArray(object):
                         }
                     ]""")
 
+        class TestNestedContextManager(object):
+            """Test various nested configurations with context managers."""
+
+            def test_inner(self):
+                with open('foo', 'w') as f:
+                    with jsonstreams.Array(f, 0, 0, _ENCODER) as s:
+                        with s.subobject() as p:
+                            p.write('foo', 'bar')
+                            p.write(1, 'bar')
+
+                with open('foo', 'r') as f:
+                    assert f.read() == '[{"foo": "bar", 1: "bar"}]'
+
+            def test_outer_inner(self):
+                with open('foo', 'w') as f:
+                    with jsonstreams.Array(f, 0, 0, _ENCODER) as s:
+                        s.write('foo')
+                        with s.subobject() as p:
+                            p.write(1, 'bar')
+
+                with open('foo', 'r') as f:
+                    assert f.read() == '["foo", {1: "bar"}]'
+
+            def test_inner_outer(self):
+                with open('foo', 'w') as f:
+                    with jsonstreams.Array(f, 0, 0, _ENCODER) as s:
+                        with s.subobject() as p:
+                            p.write(1, 'bar')
+                        s.write('foo')
+
+                with open('foo', 'r') as f:
+                    assert f.read() == '[{1: "bar"}, "foo"]'
+
+            def test_outer_inner_outer(self):
+                with open('foo', 'w') as f:
+                    with jsonstreams.Array(f, 0, 0, _ENCODER) as s:
+                        s.write(1)
+                        with s.subobject() as p:
+                            p.write(1, 'bar')
+                        s.write(2)
+
+                with open('foo', 'r') as f:
+                    assert f.read() == '[1, {1: "bar"}, 2]'
+
+        class TestNested(object):
+            """Test various nested configurations."""
+
+            def test_inner(self):
+                with open('foo', 'w') as f:
+                    s = jsonstreams.Array(f, 0, 0, _ENCODER)
+                    p = s.subobject()
+                    p.write('foo', 'bar')
+                    p.write(1, 'bar')
+                    p.close()
+                    s.close()
+
+                with open('foo', 'r') as f:
+                    assert f.read() == '[{"foo": "bar", 1: "bar"}]'
+
+            def test_outer_inner(self):
+                with open('foo', 'w') as f:
+                    s = jsonstreams.Array(f, 0, 0, _ENCODER)
+                    s.write('foo')
+                    p = s.subobject()
+                    p.write(1, 'bar')
+                    p.close()
+                    s.close()
+
+                with open('foo', 'r') as f:
+                    assert f.read() == '["foo", {1: "bar"}]'
+
+            def test_inner_outer(self):
+                with open('foo', 'w') as f:
+                    s = jsonstreams.Array(f, 0, 0, _ENCODER)
+                    p = s.subobject()
+                    p.write(1, 'bar')
+                    p.close()
+                    s.write('foo')
+                    s.close()
+
+                with open('foo', 'r') as f:
+                    assert f.read() == '[{1: "bar"}, "foo"]'
+
+            def test_outer_inner_outer(self):
+                with open('foo', 'w') as f:
+                    s = jsonstreams.Array(f, 0, 0, _ENCODER)
+                    s.write(1)
+                    p = s.subobject()
+                    p.write(1, 'bar')
+                    p.close()
+                    s.write(2)
+                    s.close()
+
+                with open('foo', 'r') as f:
+                    assert f.read() == '[1, {1: "bar"}, 2]'
+
     class TestSubarray(object):
 
         @pytest.fixture(autouse=True)
@@ -549,6 +860,102 @@ class TestArray(object):
                             "foo"
                         ]
                     ]""")
+
+        class TestNestedContextManager(object):
+            """Test various nested configurations with context managers."""
+
+            def test_inner(self):
+                with open('foo', 'w') as f:
+                    with jsonstreams.Array(f, 0, 0, _ENCODER) as s:
+                        with s.subarray() as p:
+                            p.write('foo')
+                            p.write('bar')
+
+                with open('foo', 'r') as f:
+                    assert f.read() == '[["foo", "bar"]]'
+
+            def test_outer_inner(self):
+                with open('foo', 'w') as f:
+                    with jsonstreams.Array(f, 0, 0, _ENCODER) as s:
+                        s.write('foo')
+                        with s.subarray() as p:
+                            p.write('bar')
+
+                with open('foo', 'r') as f:
+                    assert f.read() == '["foo", ["bar"]]'
+
+            def test_inner_outer(self):
+                with open('foo', 'w') as f:
+                    with jsonstreams.Array(f, 0, 0, _ENCODER) as s:
+                        with s.subarray() as p:
+                            p.write('bar')
+                        s.write('foo')
+
+                with open('foo', 'r') as f:
+                    assert f.read() == '[["bar"], "foo"]'
+
+            def test_outer_inner_outer(self):
+                with open('foo', 'w') as f:
+                    with jsonstreams.Array(f, 0, 0, _ENCODER) as s:
+                        s.write(1)
+                        with s.subarray() as p:
+                            p.write('bar')
+                        s.write(2)
+
+                with open('foo', 'r') as f:
+                    assert f.read() == '[1, ["bar"], 2]'
+
+        class TestNested(object):
+            """Test various nested configurations."""
+
+            def test_inner(self):
+                with open('foo', 'w') as f:
+                    s = jsonstreams.Array(f, 0, 0, _ENCODER)
+                    p = s.subarray()
+                    p.write('foo')
+                    p.write('bar')
+                    p.close()
+                    s.close()
+
+                with open('foo', 'r') as f:
+                    assert f.read() == '[["foo", "bar"]]'
+
+            def test_outer_inner(self):
+                with open('foo', 'w') as f:
+                    s = jsonstreams.Array(f, 0, 0, _ENCODER)
+                    s.write('foo')
+                    p = s.subarray()
+                    p.write('bar')
+                    p.close()
+                    s.close()
+
+                with open('foo', 'r') as f:
+                    assert f.read() == '["foo", ["bar"]]'
+
+            def test_inner_outer(self):
+                with open('foo', 'w') as f:
+                    s = jsonstreams.Array(f, 0, 0, _ENCODER)
+                    p = s.subarray()
+                    p.write('foo')
+                    p.close()
+                    s.write('bar')
+                    s.close()
+
+                with open('foo', 'r') as f:
+                    assert f.read() == '[["foo"], "bar"]'
+
+            def test_outer_inner_outer(self):
+                with open('foo', 'w') as f:
+                    s = jsonstreams.Array(f, 0, 0, _ENCODER)
+                    s.write(1)
+                    p = s.subarray()
+                    p.write(1)
+                    p.close()
+                    s.write(2)
+                    s.close()
+
+                with open('foo', 'r') as f:
+                    assert f.read() == '[1, [1], 2]'
 
     class TestClose(object):
 
