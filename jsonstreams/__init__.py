@@ -124,6 +124,10 @@ class BaseWriter(object):
 
 
 class ObjectWriter(BaseWriter):
+    """A Writer class specifically for Objects.
+
+    Supports writing keys and values.
+    """
 
     def write_key(self, key):
         self.raw_write(self.encoder.encode(key), indent=self.indent)
@@ -138,7 +142,7 @@ class ObjectWriter(BaseWriter):
         # statements.
         self.write = self._write_comma
 
-    def _write_comma(self, key, value):
+    def _write_comma(self, key, value):  # pylint: disable=arguments-differ
         """Write with a comma."""
         self.write_comma_literal()
         self.write_key(key)
@@ -146,20 +150,24 @@ class ObjectWriter(BaseWriter):
 
 
 class ArrayWriter(BaseWriter):
+    """Writer for Arrays.
+
+    Supports writing only values.
+    """
 
     def _write_no_comma(self, value):  # pylint: disable=arguments-differ
         """Write without a comma."""
         self.raw_write(self.encoder.encode(value), indent=self.indent)
         self.set_comma()
 
-    def _write_comma(self, value):
+    def _write_comma(self, value):  # pylint: disable=arguments-differ
         """Write with a comma."""
         self.write_comma_literal()
         self.raw_write(self.encoder.encode(value), indent=self.indent)
 
 
 def _raise(exc, *args, **kwargs):  # pylint: disable=unused-argument
-    """helper to raise an exception."""
+    """Helper to raise an exception."""
     raise exc
 
 
@@ -325,6 +333,7 @@ class Stream(object):
     }
 
     def __init__(self, filename, jtype, indent=0, encoder=json.JSONEncoder):
+        """Constructor."""
         assert jtype in ['object', 'array']
 
         self.filename = filename
@@ -336,6 +345,12 @@ class Stream(object):
         self.subarray = self.__inst.subarray
 
     def write(self, *args, **kwargs):
+        """Write values into the stream.
+
+        This method wraps either Object.write or Array.write, depending on
+        whether it was initialzed with the 'object' argument or the 'array'
+        argument.
+        """
         self.__inst.write(*args, **kwargs)
 
     def close(self):
@@ -344,7 +359,9 @@ class Stream(object):
         self.__fd.close()
 
     def __enter__(self):
+        """Start context manager."""
         return self
 
     def __exit__(self, etype, evalue, traceback):
+        """Exit context manager."""
         self.close()
