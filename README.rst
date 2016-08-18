@@ -1,6 +1,14 @@
 JSONStreams
 ===========
 
+
+.. image:: https://travis-ci.org/dcbaker/jsonstreams.svg?branch=master
+    :target: https://travis-ci.org/dcbaker/jsonstreams
+
+
+Description
+###########
+
 JSONstreams is a package that attempts to making writing JSON in a streaming
 format easier. In contrast to the core json module, this package doesn't
 require building a complete tree of dicts and lists before writing, instead it
