@@ -51,7 +51,14 @@ setup(
         'Programming Language :: Python :: 3.5',
     ],
     install_requires=['six'],
-    tests_require=['tox'],
+    extras_require={
+        'recomended': [
+            'simplejson',
+        ],
+        'test': [
+            'tox',
+        ]
+    },
     keywords='JSON stream',
     packages=['jsonstreams'],
     cmdclass={'test': Tox}
