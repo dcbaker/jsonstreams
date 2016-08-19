@@ -1,6 +1,14 @@
 Changes
 =======
 
+next
+-----
+
+New features:
+
+- Add typing stub files. (`#6 https://github.com/dcbaker/jsonstreams/issues/6`)
+
+
 0.2.0
 -----
 
