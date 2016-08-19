@@ -69,9 +69,9 @@ except ImportError:
 
 import six
 
-__all__ = [
+__all__ = (
     'Stream',
-]
+)
 
 __version__ = '0.1.2'
 
