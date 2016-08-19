@@ -33,7 +33,7 @@ with open(path.join(here, 'README.rst'), encoding='utf-8') as f:
 
 setup(
     name='jsonstreams',
-    version='0.1.2',
+    version='0.2.0',
     description='A JSON streaming writer',
     long_description=long_description,
     url='https://github.com/dcbaker/jsonstreams',
