@@ -154,6 +154,14 @@ class TestObject(object):
                 with open('foo', 'r') as f:
                     assert f.read() == '{"foo": "bar", "bar": "foo"}'
 
+            def test_complex(self):
+                with open('foo', 'w') as f:
+                    with jsonstreams.Object(f, 0, 0, _ENCODER) as s:
+                        s.write('foo', {"1": 'bar'})
+
+                with open('foo', 'r') as f:
+                    assert f.read() == '{"foo": {"1": "bar"}}'
+
         class TestWithIndent(object):
 
             @pytest.fixture(autouse=True)
@@ -182,6 +190,17 @@ class TestObject(object):
                         {
                             "foo": "bar",
                             "bar": "foo"
+                        }""")
+
+            def test_complex(self):
+                with open('foo', 'w') as f:
+                    with jsonstreams.Object(f, 4, 0, _ENCODER) as s:
+                        s.write('foo', {"1": 'bar'})
+
+                with open('foo', 'r') as f:
+                    assert f.read() == textwrap.dedent("""\
+                        {
+                            "foo": {"1": "bar"}
                         }""")
 
         @pytest.mark.parametrize("key,value,expected", [
@@ -628,6 +647,14 @@ class TestArray(object):
                 with open('foo', 'r') as f:
                     assert f.read() == '["foo", "bar"]'
 
+            def test_complex(self):
+                with open('foo', 'w') as f:
+                    with jsonstreams.Array(f, 0, 0, _ENCODER) as s:
+                        s.write({"1": 'bar'})
+
+                with open('foo', 'r') as f:
+                    assert f.read() == '[{"1": "bar"}]'
+
         class TestWithIndent(object):
 
             @pytest.fixture(autouse=True)
@@ -656,6 +683,17 @@ class TestArray(object):
                         [
                             "foo",
                             "bar"
+                        ]""")
+
+            def test_complex(self):
+                with open('foo', 'w') as f:
+                    with jsonstreams.Array(f, 4, 0, _ENCODER) as s:
+                        s.write({"1": 'bar'})
+
+                with open('foo', 'r') as f:
+                    assert f.read() == textwrap.dedent("""\
+                        [
+                            {"1": "bar"}
                         ]""")
 
         @pytest.mark.parametrize("value,expected", [
