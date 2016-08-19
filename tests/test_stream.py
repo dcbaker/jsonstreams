@@ -23,11 +23,11 @@
 import json
 import textwrap
 
-import pytest
+import pytest  # type: ignore
 
 import jsonstreams
 
-_ENCODER = json.JSONEncoder()
+_ENCODER = json.JSONEncoder()  # type: ignore
 
 # pylint: disable=no-self-use
 
@@ -216,7 +216,7 @@ class TestObject(object):
                             "foo": {"1": "bar"}
                         }""")
 
-        @pytest.mark.parametrize("key,value,expected", [
+        @pytest.mark.parametrize("key,value,expected", [  # type: ignore
             ("foo", "bar", '{"foo": "bar"}'),
             ("foo", 1, '{"foo": 1}'),
             ("foo", 1.0, '{"foo": 1.0}'),
@@ -738,7 +738,7 @@ class TestArray(object):
                             {"1": "bar"}
                         ]""")
 
-        @pytest.mark.parametrize("value,expected", [
+        @pytest.mark.parametrize("value,expected", [  # type: ignore
             ("foo", '["foo"]'),
             (1, '[1]'),
             (1.0, '[1.0]'),
