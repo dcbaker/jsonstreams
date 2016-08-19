@@ -9,6 +9,11 @@ JSONStreams
     :target: https://ci.appveyor.com/project/dcbaker/jsonstreams
 
 
+Source code is available at github_.
+
+The code is licensed MIT. See the included LICENSE file for the exact terms.
+
+
 Description
 ###########
 
@@ -55,3 +60,6 @@ is unnecessary::
     with jsonstreams.Stream('foo', 'object') as s:
         s.write('list', mylist)
         s.write('dict', mydict)
+
+
+.. _github: https://github.com/dcbaker/jsonstreams
