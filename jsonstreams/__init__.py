@@ -106,13 +106,17 @@ class InvalidTypeError(JSONStreamsError):
 class BaseWriter(object):
     """Private class for writing things."""
 
-    def __init__(self, fd, indent, baseindent, encoder):
+    def __init__(self, fd, indent, baseindent, encoder, pretty):
         self.fd = fd  # pylint: disable=invalid-name
         self.indent = indent
         self.baseindent = baseindent
         self.encoder = encoder
+        self.pretty = pretty
 
-        self.write = self._write_no_comma
+        if not pretty:
+            self.write = self._write_no_comma
+        else:
+            self.write = self._pretty_write_no_comma
 
         if indent:
             self.write_comma_literal = functools.partial(
@@ -140,10 +144,19 @@ class BaseWriter(object):
     def _write_comma(self):
         """Baseish class."""
 
+    def _pretty_write_no_comma(self):
+        """Baseish class."""
+
+    def _pretty_write_comma(self):
+        """Baseish class."""
+
     def set_comma(self):
         # replace with the comma version, removeing the need for extra if
         # statements.
-        self.write = self._write_comma
+        if not self.pretty:
+            self.write = self._write_comma
+        else:
+            self.write = self._pretty_write_comma
 
 
 class ObjectWriter(BaseWriter):
@@ -168,16 +181,35 @@ class ObjectWriter(BaseWriter):
         """Write without a comma."""
         self.write_key(key)
         self.raw_write(self.encoder.encode(value))
-
-        # replace with the comma version, removeing the need for extra if
-        # statements.
-        self.write = self._write_comma
+        self.set_comma()
 
     def _write_comma(self, key, value):  # pylint: disable=arguments-differ
         """Write with a comma."""
         self.write_comma_literal()
         self.write_key(key)
         self.raw_write(self.encoder.encode(value))
+
+    def _pretty_write_no_comma(self, key, value):
+        """Write without a comma."""
+        # pylint: disable=arguments-differ
+        self.write_key(key)
+        items = self.encoder.encode(value).rstrip().split('\n')
+        self.raw_write(items[0], newline=True)
+        for each in items[1:-1]:
+            self.raw_write(each, indent=True, newline=True)
+        self.raw_write(items[-1], indent=True)
+        self.set_comma()
+
+    def _pretty_write_comma(self, key, value):
+        """Write with a comma."""
+        # pylint: disable=arguments-differ
+        self.write_comma_literal()
+        self.write_key(key)
+        items = self.encoder.encode(value).rstrip().split('\n')
+        self.raw_write(items[0], newline=True)
+        for each in items[1:-1]:
+            self.raw_write(each, indent=True, newline=True)
+        self.raw_write(items[-1], indent=True)
 
 
 class ArrayWriter(BaseWriter):
@@ -195,6 +227,23 @@ class ArrayWriter(BaseWriter):
         """Write with a comma."""
         self.write_comma_literal()
         self.raw_write(self.encoder.encode(value), indent=self.indent)
+
+    def _pretty_write_no_comma(self, value):
+        """Write without a comma."""
+        # pylint: disable=arguments-differ
+        items = self.encoder.encode(value).rstrip().split('\n')
+        for each in items[:-1]:
+            self.raw_write(each, indent=True, newline=True)
+        self.raw_write(items[-1], indent=True)
+        self.set_comma()
+
+    def _pretty_write_comma(self, value):  # pylint: disable=arguments-differ
+        """Write with a comma."""
+        self.write_comma_literal()
+        items = self.encoder.encode(value).rstrip().split('\n')
+        for each in items[:-1]:
+            self.raw_write(each, indent=True, newline=True)
+        self.raw_write(items[-1], indent=True)
 
 
 def _raise(exc, *args, **kwargs):  # pylint: disable=unused-argument
@@ -251,8 +300,9 @@ class _CacheChild(object):
 class Object(object):
     """A streaming array representation."""
 
-    def __init__(self, fd, indent, baseindent, encoder, _indent=False):
-        self._writer = ObjectWriter(fd, indent, baseindent, encoder)
+    def __init__(self, fd, indent, baseindent, encoder, _indent=False,
+                 pretty=False):
+        self._writer = ObjectWriter(fd, indent, baseindent, encoder, pretty)
         self._writer.raw_write('{', indent=_indent, newline=indent)
         self._writer.baseindent += 1
 
@@ -275,7 +325,8 @@ class Object(object):
         return Open(
             functools.partial(
                 jtype, self._writer.fd, self._writer.indent,
-                self._writer.baseindent, self._writer.encoder, _indent=False),
+                self._writer.baseindent, self._writer.encoder,
+                pretty=self._writer.pretty, _indent=False),
             callback=cached.restore)
 
     def subobject(self, key):  # pylint: disable=method-hidden
@@ -320,8 +371,9 @@ class Object(object):
 class Array(object):
     """A streaming array representation."""
 
-    def __init__(self, fd, indent, baseindent, encoder, _indent=False):
-        self._writer = ArrayWriter(fd, indent, baseindent, encoder)
+    def __init__(self, fd, indent, baseindent, encoder, _indent=False,
+                 pretty=False):
+        self._writer = ArrayWriter(fd, indent, baseindent, encoder, pretty)
         self._writer.raw_write('[', indent=_indent, newline=indent)
         self._writer.baseindent += 1
 
@@ -343,7 +395,8 @@ class Array(object):
         return Open(
             functools.partial(
                 jtype, self._writer.fd, self._writer.indent,
-                self._writer.baseindent, self._writer.encoder, _indent=True),
+                self._writer.baseindent, self._writer.encoder,
+                pretty=self._writer.pretty, _indent=True),
             callback=cached.restore)
 
     def subobject(self):  # pylint: disable=method-hidden
@@ -416,14 +469,15 @@ class Stream(object):
         'array': Array,
     }
 
-    def __init__(self, filename, jtype, indent=0, encoder=json.JSONEncoder):
+    def __init__(self, filename, jtype, indent=0, pretty=False,
+                 encoder=json.JSONEncoder):
         """Constructor."""
         assert jtype in ['object', 'array']
 
         self.filename = filename
         self.__fd = open(filename, 'w')
         self.__inst = self._types[jtype](
-            self.__fd, indent, 0, encoder(indent=indent))
+            self.__fd, indent, 0, encoder(indent=indent), pretty)
 
         self.subobject = self.__inst.subobject
         self.subarray = self.__inst.subarray

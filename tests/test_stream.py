@@ -240,6 +240,30 @@ class TestObject(object):
                     with pytest.raises(jsonstreams.InvalidTypeError):
                         s.write(key, 'foo')
 
+        def test_pretty(self):
+            with open('foo', 'w') as f:
+                with jsonstreams.Object(f, 4, 0, json.JSONEncoder(indent=4),
+                                        pretty=True) as s:
+                    s.write("1", {'bar': {"b": 0}})
+                    s.write("2", {'fob': {"f": 0}})
+
+            with open('foo', 'r') as f:
+                actual = f.read()
+
+            assert actual == textwrap.dedent("""\
+                {
+                    "1": {
+                        "bar": {
+                            "b": 0
+                        }
+                    },
+                    "2": {
+                        "fob": {
+                            "f": 0
+                        }
+                    }
+                }""")
+
     class TestSubobject(object):
         """Tests for the suboboject method."""
 
@@ -729,6 +753,30 @@ class TestArray(object):
 
             with open('foo', 'r') as f:
                 assert f.read() == expected
+
+        def test_pretty(self):
+            with open('foo', 'w') as f:
+                with jsonstreams.Array(f, 4, 0, json.JSONEncoder(indent=4),
+                                       pretty=True) as s:
+                    s.write({'bar': {"b": 0}})
+                    s.write({'fob': {"f": 0}})
+
+            with open('foo', 'r') as f:
+                actual = f.read()
+
+            assert actual == textwrap.dedent("""\
+                [
+                    {
+                        "bar": {
+                            "b": 0
+                        }
+                    },
+                    {
+                        "fob": {
+                            "f": 0
+                        }
+                    }
+                ]""")
 
     class TestSubobject(object):
 
