@@ -74,31 +74,28 @@ class TestStream(object):
         s.close()
 
     def test_write_two(self):
-        with open('foo', 'w') as f:
-            with jsonstreams.Stream('foo', 'object') as s:
-                s.write('foo', 'bar')
-                s.write('bar', 'foo')
+        with jsonstreams.Stream('foo', 'object') as s:
+            s.write('foo', 'bar')
+            s.write('bar', 'foo')
 
         with open('foo', 'r') as f:
             assert f.read() == '{"foo": "bar", "bar": "foo"}'
 
     def test_subobject(self):
-        with open('foo', 'w') as f:
-            with jsonstreams.Stream('foo', 'object') as s:
-                s.write('foo', 'bar')
-                with s.subobject('bar') as b:
-                    b.write('1', 'foo')
+        with jsonstreams.Stream('foo', 'object') as s:
+            s.write('foo', 'bar')
+            with s.subobject('bar') as b:
+                b.write('1', 'foo')
 
         with open('foo', 'r') as f:
             assert f.read() == '{"foo": "bar", "bar": {"1": "foo"}}'
 
     def test_subarray(self):
-        with open('foo', 'w') as f:
-            with jsonstreams.Stream('foo', 'array') as s:
-                s.write('foo')
-                with s.subarray() as b:
-                    b.write(1)
-                    b.write(2)
+        with jsonstreams.Stream('foo', 'array') as s:
+            s.write('foo')
+            with s.subarray() as b:
+                b.write(1)
+                b.write(2)
 
         with open('foo', 'r') as f:
             assert f.read() == '["foo", [1, 2]]'
