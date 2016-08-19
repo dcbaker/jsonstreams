@@ -46,7 +46,7 @@ subobject() method.
 >>> with Stream('foo', 'array') as s:
 ...     s.write('foo')
 ...     with s.subobject() as o:
-...         o.write(1, 'bar')
+...         o.write('1', 'bar')
 
 Any object that can be serialized can be passed (although passing some elements
 as object keys is not supported, and should not be passed).
@@ -92,6 +92,14 @@ class ModifyWrongStreamError(JSONStreamsError):
     data in the parent while the child is opened.
 
     This Exception should not be caught, it is a fatal exception.
+    """
+
+
+class InvalidTypeError(JSONStreamsError):
+    """An exception raised when an invalid type is passed.
+
+    Sometimes a type is invalid for certain purposes. For example, a numeric
+    type or null cannot be used as a key in a JSON object.
     """
 
 
@@ -145,6 +153,14 @@ class ObjectWriter(BaseWriter):
     """
 
     def write_key(self, key):
+        """Write a key for an object.
+
+        This will enforce that a key must be a string type, since that's a
+        requirement of JSON.
+        """
+        if not isinstance(key, (six.text_type, six.binary_type)):
+            raise InvalidTypeError('Only string or bytes types can be used as '
+                                   'keys in JSON objects')
         self.raw_write(self.encoder.encode(key), indent=self.indent)
         self.raw_write(': ')
 
