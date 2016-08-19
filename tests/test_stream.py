@@ -100,6 +100,22 @@ class TestStream(object):
         with open('foo', 'r') as f:
             assert f.read() == '["foo", [1, 2]]'
 
+    def test_encoder_indent(self):
+        with jsonstreams.Stream('foo', 'object', indent=4) as s:
+            s.write('oink', {'bar': {'b': 0}})
+
+        with open('foo', 'r') as f:
+            actual = f.read()
+
+        assert actual == textwrap.dedent("""\
+            {
+                "oink": {
+                "bar": {
+                    "b": 0
+                }
+            }
+            }""")
+
 
 class TestObject(object):
 
