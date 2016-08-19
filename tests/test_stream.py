@@ -556,6 +556,27 @@ class TestObject(object):
                 with pytest.raises(jsonstreams.StreamClosedError):
                     test.subobject('foo')
 
+    class TestWriteToParent(object):
+        """Tests for writing to the parent with a subobject open."""
+
+        @pytest.fixture(autouse=True)
+        def chdir(self, tmpdir):
+            tmpdir.chdir()
+
+        def test_subobject(self):
+            with open('foo', 'w') as f:
+                with jsonstreams.Object(f, 0, 0, _ENCODER) as a:
+                    with a.subobject('foo') as b:
+                        with pytest.raises(jsonstreams.ModifyWrongStreamError):
+                            a.write('foo', 'bar')
+
+        def test_subarray(self):
+            with open('foo', 'w') as f:
+                with jsonstreams.Object(f, 0, 0, _ENCODER) as a:
+                    with a.subarray('foo') as b:
+                        with pytest.raises(jsonstreams.ModifyWrongStreamError):
+                            a.write('foo', 'bar')
+
 
 class TestArray(object):
 
@@ -1002,3 +1023,24 @@ class TestArray(object):
 
                 with pytest.raises(jsonstreams.StreamClosedError):
                     test.subobject()
+
+    class TestWriteToParent(object):
+        """Tests for writing to the parent with a subobject open."""
+
+        @pytest.fixture(autouse=True)
+        def chdir(self, tmpdir):
+            tmpdir.chdir()
+
+        def test_subobject(self):
+            with open('foo', 'w') as f:
+                with jsonstreams.Array(f, 0, 0, _ENCODER) as a:
+                    with a.subobject() as b:
+                        with pytest.raises(jsonstreams.ModifyWrongStreamError):
+                            a.write('foo')
+
+        def test_subarray(self):
+            with open('foo', 'w') as f:
+                with jsonstreams.Array(f, 0, 0, _ENCODER) as a:
+                    with a.subarray() as b:
+                        with pytest.raises(jsonstreams.ModifyWrongStreamError):
+                            a.write('foo')

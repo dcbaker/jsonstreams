@@ -67,6 +67,8 @@ try:
 except ImportError:
     import json
 
+import six
+
 __all__ = [
     'Stream',
 ]
@@ -80,6 +82,17 @@ class JSONStreamsError(Exception):
 
 class StreamClosedError(JSONStreamsError):
     """Error raised when writing into a closed Element."""
+
+
+class ModifyWrongStreamError(JSONStreamsError):
+    """This exception is raised when writing to a parent when a child is opened.
+
+    Because of the streaming nature of this module, one cannot write into a
+    parent without first closing the child, since there is no way to put the
+    data in the parent while the child is opened.
+
+    This Exception should not be caught, it is a fatal exception.
+    """
 
 
 class BaseWriter(object):
@@ -176,9 +189,9 @@ def _raise(exc, *args, **kwargs):  # pylint: disable=unused-argument
 class Open(object):
     """A helper to allow subelements to be used as context managers."""
 
-    def __init__(self, initializer):
+    def __init__(self, initializer, callback=None):
         self.__inst = initializer()
-        self.close = self.__inst.close
+        self.__callback = callback
         self.subarray = self.__inst.subarray
         self.subobject = self.__inst.subobject
 
@@ -188,8 +201,35 @@ class Open(object):
     def __enter__(self):
         return self.__inst
 
-    def __exit__(self, etype, evalue, traceback):
+    def close(self):
         self.__inst.close()
+        if self.__callback is not None:
+            self.__callback()
+
+    def __exit__(self, etype, evalue, traceback):
+        self.close()
+
+
+class _CacheChild(object):
+    """Object that hides public methods while a child is opened.
+
+    It does this by shadowing them with a function that raises an exception
+    when called, during initialization, and when it's restore() method is
+    called it puts them back.
+    """
+
+    def __init__(self, inst, **kwargs):
+        self.cached = kwargs
+        self.inst = inst
+
+        func = functools.partial(_raise, ModifyWrongStreamError(
+            'Cannot modify a stream while a child stream is opened'))
+        for k in six.iterkeys(kwargs):
+            setattr(inst, k, func)
+
+    def restore(self):
+        for k, v in six.iteritems(self.cached):
+            setattr(self.inst, k, v)
 
 
 class Object(object):
@@ -201,13 +241,26 @@ class Object(object):
         self._writer.baseindent += 1
 
     def _sub(self, jtype, key):
+        """A shared method for subarray and subobject."""
+        # Write in the comma if it's needed, then write in the key
         if self._writer.comma:
             self._writer.write_comma_literal()
         self._writer.set_comma()
         self._writer.write_key(key)
-        return Open(functools.partial(
-            jtype, self._writer.fd, self._writer.indent,
-            self._writer.baseindent, self._writer.encoder, _indent=False))
+
+        # Create an object that caches the public methods of the class and
+        # replaces them with a function that raises an exception. It's restore
+        # method is passed as a callback to Open which is called when
+        # Open.close() is called.
+        cached = _CacheChild(
+            self, write=self.write, subobject=self.subobject,
+            subarray=self.subarray, close=self.close)
+
+        return Open(
+            functools.partial(
+                jtype, self._writer.fd, self._writer.indent,
+                self._writer.baseindent, self._writer.encoder, _indent=False),
+            callback=cached.restore)
 
     def subobject(self, key):  # pylint: disable=method-hidden
         return self._sub(Object, key)
@@ -257,12 +310,25 @@ class Array(object):
         self._writer.baseindent += 1
 
     def _sub(self, jtype):
+        """A shared method for subarray and subobject."""
+        # Write in the comma if it's needed, then write in the key
         if self._writer.comma:
             self._writer.write_comma_literal()
         self._writer.set_comma()
-        return Open(functools.partial(
-            jtype, self._writer.fd, self._writer.indent,
-            self._writer.baseindent, self._writer.encoder, _indent=True))
+
+        # Create an object that caches the public methods of the class and
+        # replaces them with a function that raises an exception. It's restore
+        # method is passed as a callback to Open which is called when
+        # Open.close() is called.
+        cached = _CacheChild(
+            self, write=self.write, subobject=self.subobject,
+            subarray=self.subarray, close=self.close)
+
+        return Open(
+            functools.partial(
+                jtype, self._writer.fd, self._writer.indent,
+                self._writer.baseindent, self._writer.encoder, _indent=True),
+            callback=cached.restore)
 
     def subobject(self):  # pylint: disable=method-hidden
         return self._sub(Object)
