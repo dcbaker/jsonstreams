@@ -70,6 +70,9 @@ except ImportError:
 import six
 
 __all__ = (
+    'InvalidTypeError',
+    'ModifyWrongStreamError',
+    'StreamClosedError',
     'Stream',
 )
 
