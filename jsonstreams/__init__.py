@@ -480,7 +480,7 @@ class Stream(object):
         self.filename = filename
         self.__fd = open(filename, 'w')
         self.__inst = self._types[jtype](
-            self.__fd, indent, 0, encoder(indent=indent), pretty)
+            self.__fd, indent, 0, encoder(indent=indent), pretty=pretty)
 
         self.subobject = self.__inst.subobject
         self.subarray = self.__inst.subarray

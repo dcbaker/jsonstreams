@@ -1,6 +1,15 @@
 Changes
 =======
 
+next
+----
+
+Bug Fixes:
+
+- Pass the pretty flag down in the Stream class correctly. This bug was more of
+  an annoyance than anything else. (`#7 https://github.com/dcbaker/jsonstreams/issues/7`)
+
+
 0.2.0
 -----
 

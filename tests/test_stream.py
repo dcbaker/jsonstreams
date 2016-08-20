@@ -116,6 +116,28 @@ class TestStream(object):
             }
             }""")
 
+    def test_pretty(self):
+        with jsonstreams.Stream('foo', 'array', indent=4, pretty=True) as s:
+            s.write({'bar': {"b": 0}})
+            s.write({'fob': {"f": 0}})
+
+        with open('foo', 'r') as f:
+            actual = f.read()
+
+        assert actual == textwrap.dedent("""\
+            [
+                {
+                    "bar": {
+                        "b": 0
+                    }
+                },
+                {
+                    "fob": {
+                        "f": 0
+                    }
+                }
+            ]""")
+
 
 class TestObject(object):
 
