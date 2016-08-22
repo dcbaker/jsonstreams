@@ -36,14 +36,14 @@ Create a Stream instance, which will be either an object (in JSON terminology,
 dict in python terminology), or an array (list in python terminology). Then use
 the write method to write elements into the file.
 
->>> with Stream('foo', 'array') as s:
+>>> with Stream('array', filename='foo') as s:
 ...     s.write('foo')
 ...     s.write('bar')
 
 Each element can also open a subelement, either via the subarray() or
 subobject() method.
 
->>> with Stream('foo', 'array') as s:
+>>> with Stream('array', filename='foo') as s:
 ...     s.write('foo')
 ...     with s.subobject() as o:
 ...         o.write('1', 'bar')
@@ -51,7 +51,7 @@ subobject() method.
 Any object that can be serialized can be passed (although passing some elements
 as object keys is not supported, and should not be passed).
 
->>> with Stream('foo', 'object') as s:
+>>> with Stream('object', filename='foo') as s:
 ...     s.write('foo', {'foo': 'bar'})
 
 It is very important to note that while the Array and Object classes present
@@ -374,7 +374,7 @@ class Object(object):
         meant for use with generators or the like.
 
         >>> gen = ((str(s), str(k)) for s in range(5) for k in range(5))
-        >>> with Stream('foo', 'object') as s:
+        >>> with Stream('object', filename='foo') as s:
         ...     s.iterwrite(gen)
         """
         for key, value in args:
@@ -437,7 +437,7 @@ class Array(object):
         meant for use with generators or the like.
 
         >>> gen = (str(s) for s in range(5))
-        >>> with Stream('foo', 'array') as s:
+        >>> with Stream('array', filename='foo') as s:
         ...     s.iterwrite(gen)
         """
         for value in args:
@@ -504,12 +504,12 @@ class Stream(object):
         'array': Array,
     }
 
-    def __init__(self, filename, jtype, indent=0, pretty=False,
+    def __init__(self, jtype, filename=None, indent=0, pretty=False,
                  encoder=json.JSONEncoder):
         """Constructor."""
         assert jtype in ['object', 'array']
+        assert filename
 
-        self.filename = filename
         self.__fd = open(filename, 'w')
         self.__inst = self._types[jtype](
             self.__fd, indent, 0, encoder(indent=indent), pretty=pretty)
