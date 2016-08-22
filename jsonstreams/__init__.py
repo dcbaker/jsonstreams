@@ -55,9 +55,16 @@ as object keys is not supported, and should not be passed).
 ...     s.write('foo', {'foo': 'bar'})
 
 It is very important to note that while the Array and Object classes present
-the same API, the signature of their write methods is necessarily different.
-For Array, it accepts a single element, for Object it requires two elements,
-the key and the value.
+the same API, the signature of their write and iterwrite methods are
+necessarily different. For write, Array accepts a single element, for Object it
+requires two elements, the key and the value. With iteritems Array accepts a
+an iterable returning a single valid item, while Object accepts an iterable
+returning a (key, value) tuple pair.
+
+>>> with Stream('object', filename='foo') as s:
+...     s.iterwrite(((str(k), k) for k in range(5)))
+...     with s.subarray('foo') as a:
+...         a.iterwrite(range(5))
 """
 
 import copy
