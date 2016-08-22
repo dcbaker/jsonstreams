@@ -63,9 +63,9 @@ the key and the value.
 import copy
 import functools
 try:
-    import simplejson as json
+    import simplejson as json  # type: ignore
 except ImportError:
-    import json
+    import json  # type: ignore
 
 import six
 
