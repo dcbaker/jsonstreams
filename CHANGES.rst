@@ -1,8 +1,18 @@
 Changes
 =======
 
+next
+-----
+
+New features:
+
+- Add iterwrite methods. These allow writing generators and iterators without
+  creating an in memory data-structure.
+  (`#8 https://github.com/dcbaker/jsonstreams/issues/8`)
+
+
 0.2.1
-----
+-----
 
 Bug Fixes:
 
@@ -28,3 +38,6 @@ Bug Fixes:
   (`#2 https://github.com/dcbaker/jsonstreams/issues/2`)
 - Invalid types can no longer be passed as keys to Object.write.
   (`#1 https://github.com/dcbaker/jsonstreams/issues/1`)
+
+
+.. vim: textwidth=79

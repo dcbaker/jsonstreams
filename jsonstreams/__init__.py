@@ -364,6 +364,22 @@ class Object(object):
             _raise,
             StreamClosedError('Cannot open a subobject of a closed object!'))
 
+    def iterwrite(self, args):
+        """Write multiple keys and values into the object.
+
+        This method takes tuples of (key, value) and writes them into the dict.
+
+        It is a misuse of this api to write a dictionary using the items method
+        (or iteritems, or viewitems) unless using them with filtering, it is
+        meant for use with generators or the like.
+
+        >>> gen = ((str(s), str(k)) for s in range(5) for k in range(5))
+        >>> with Stream('foo', 'object') as s:
+        ...     s.iterwrite(gen)
+        """
+        for key, value in args:
+            self._writer.write(key, value)
+
     def __enter__(self):
         return self
 
@@ -410,6 +426,22 @@ class Array(object):
 
     def write(self, value):  # pylint: disable=method-hidden
         return self._writer.write(value)
+
+    def iterwrite(self, args):
+        """Write multiple values into the array.
+
+        This method takes an iterator of arguments
+
+        It is a misuse of this api to write a dictionary using the items method
+        (or iteritems, or viewitems) unless using them with filtering, it is
+        meant for use with generators or the like.
+
+        >>> gen = (str(s) for s in range(5))
+        >>> with Stream('foo', 'array') as s:
+        ...     s.iterwrite(gen)
+        """
+        for value in args:
+            self._writer.write(value)
 
     def close(self):  # pylint: disable=method-hidden
         """Close the Object.
@@ -493,6 +525,10 @@ class Stream(object):
         argument.
         """
         self.__inst.write(*args, **kwargs)
+
+    def iterwrite(self, *args, **kwargs):
+        """Write values into the streams from an iterator."""
+        self.__inst.iterwrite(*args, **kwargs)
 
     def close(self):
         """Close the root element and the file."""

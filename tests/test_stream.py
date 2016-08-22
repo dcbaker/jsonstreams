@@ -24,6 +24,8 @@ import json
 import textwrap
 
 import pytest
+import six
+from six.moves import range
 
 import jsonstreams
 
@@ -138,12 +140,66 @@ class TestStream(object):
                 }
             ]""")
 
+    class TestIterWrite(object):
+        """Tests for the iterwrite object."""
+
+        class TestArray(object):
+            """Tests for array object."""
+
+            @pytest.fixture(autouse=True)
+            def chdir(self, tmpdir):
+                tmpdir.chdir()
+
+            def test_basic(self):
+                with jsonstreams.Stream('foo', 'array') as s:
+                    s.iterwrite(range(5))
+
+                with open('foo', 'r') as f:
+                    actual = json.load(f)
+
+                assert actual == list(range(5))
+
+            def test_mixed(self):
+                with jsonstreams.Stream('foo', 'array') as s:
+                    s.iterwrite(range(5))
+                    s.write('a')
+
+                with open('foo', 'r') as f:
+                    actual = json.load(f)
+
+                assert actual == list(range(5)) + ['a']
+
+        class TestObject(object):
+            """Tests for array object."""
+
+            @pytest.fixture(autouse=True)
+            def chdir(self, tmpdir):
+                tmpdir.chdir()
+
+            def test_basic(self):
+                with jsonstreams.Stream('foo', 'object') as s:
+                    s.iterwrite(((str(s), k) for s in range(5) for k in range(5)))
+
+                with open('foo', 'r') as f:
+                    actual = json.load(f)
+
+                assert actual == {str(s): k for s in range(5) for k in range(5)}
+
+            def test_mixed(self):
+                with jsonstreams.Stream('foo', 'object') as s:
+                    s.iterwrite(((str(s), k) for s in range(5) for k in range(5)))
+                    s.write("6", 'a')
+
+                with open('foo', 'r') as f:
+                    actual = json.load(f)
+
+                expected = {str(s): k for s in range(5) for k in range(5)}
+                expected['6'] = 'a'
+
+                assert actual == expected
+
 
 class TestObject(object):
-
-    @pytest.fixture(autouse=True)
-    def chdir(self, tmpdir):
-        tmpdir.chdir()
 
     def test_init(self):
         with open('foo', 'w') as f:
@@ -660,6 +716,34 @@ class TestObject(object):
                         with pytest.raises(jsonstreams.ModifyWrongStreamError):
                             a.write('foo', 'bar')
 
+    class TestIterWrite(object):
+        """Tests for the iterwrite object."""
+
+        @pytest.fixture(autouse=True)
+        def chdir(self, tmpdir):
+            tmpdir.chdir()
+
+        def test_basic(self):
+            with open('foo', 'w') as f:
+                with jsonstreams.Object(f, 0, 0, _ENCODER) as a:
+                    a.iterwrite(six.iteritems({'a': 1, '2': 2, 'foo': None}))
+
+            with open('foo', 'r') as f:
+                actual = json.load(f)
+
+            assert actual == {"a": 1, "2": 2, "foo": None}
+
+        def test_mixed(self):
+            with open('foo', 'w') as f:
+                with jsonstreams.Object(f, 0, 0, _ENCODER) as a:
+                    a.iterwrite(six.iteritems({'a': 1, '2': 2, 'foo': None}))
+                    a.write('bar', 3)
+
+            with open('foo', 'r') as f:
+                actual = json.load(f)
+
+            assert actual == {"a": 1, "2": 2, "foo": None, "bar": 3}
+
 
 class TestArray(object):
 
@@ -1170,3 +1254,31 @@ class TestArray(object):
                     with a.subarray() as b:
                         with pytest.raises(jsonstreams.ModifyWrongStreamError):
                             a.write('foo')
+
+    class TestIterWrite(object):
+        """Tests for the iterwrite object."""
+
+        @pytest.fixture(autouse=True)
+        def chdir(self, tmpdir):
+            tmpdir.chdir()
+
+        def test_basic(self):
+            with open('foo', 'w') as f:
+                with jsonstreams.Array(f, 0, 0, _ENCODER) as a:
+                    a.iterwrite(range(5))
+
+            with open('foo', 'r') as f:
+                actual = json.load(f)
+
+            assert actual == list(range(5))
+
+        def test_mixed(self):
+            with open('foo', 'w') as f:
+                with jsonstreams.Array(f, 0, 0, _ENCODER) as a:
+                    a.iterwrite(range(5))
+                    a.write('a')
+
+            with open('foo', 'r') as f:
+                actual = json.load(f)
+
+            assert actual == list(range(5)) + ['a']
