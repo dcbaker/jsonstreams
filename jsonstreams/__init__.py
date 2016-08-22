@@ -504,13 +504,13 @@ class Stream(object):
         'array': Array,
     }
 
-    def __init__(self, jtype, filename=None, indent=0, pretty=False,
+    def __init__(self, jtype, filename=None, fd=None, indent=0, pretty=False,
                  encoder=json.JSONEncoder):
         """Constructor."""
         assert jtype in ['object', 'array']
-        assert filename
+        assert filename or fd
 
-        self.__fd = open(filename, 'w')
+        self.__fd = fd or open(filename, 'w')
         self.__inst = self._types[jtype](
             self.__fd, indent, 0, encoder(indent=indent), pretty=pretty)
 

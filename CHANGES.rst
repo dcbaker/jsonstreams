@@ -6,6 +6,8 @@ next
 
 New features:
 
+- Allow passing a filename or an already opened fd to the Stream class.
+  (`#4 https://github.com/dcbaker/jsonstreams/issues/4`)
 - Add typing stub files. (`#6 https://github.com/dcbaker/jsonstreams/issues/6`)
 - Add iterwrite methods. These allow writing generators and iterators without
   creating an in memory data-structure.

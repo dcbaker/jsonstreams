@@ -48,6 +48,14 @@ class TestStream(object):
         with open('foo', 'r') as f:
             assert f.read() == '{"foo": "bar"}'
 
+    def test_fd(self):
+        with open('foo', 'w') as f:
+            with jsonstreams.Stream('object', fd=f) as s:
+                s.write('foo', 'bar')
+
+        with open('foo', 'r') as f:
+            assert f.read() == '{"foo": "bar"}'
+
     def test_context_manager(self):
         with jsonstreams.Stream('object', filename='foo') as s:
             s.write('foo', 'bar')
