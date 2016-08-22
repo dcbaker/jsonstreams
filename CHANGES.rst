@@ -6,6 +6,7 @@ next
 
 New features:
 
+- Add typing stub files. (`#6 https://github.com/dcbaker/jsonstreams/issues/6`)
 - Add iterwrite methods. These allow writing generators and iterators without
   creating an in memory data-structure.
   (`#8 https://github.com/dcbaker/jsonstreams/issues/8`)

@@ -60,6 +60,9 @@ setup(
             'tox',
         ]
     },
+    package_data = {
+        '': ['*pyi'],
+    },
     keywords='JSON stream',
     packages=['jsonstreams'],
     cmdclass={'test': Tox}
