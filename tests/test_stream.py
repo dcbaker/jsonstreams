@@ -780,6 +780,36 @@ class TestObject(object):
                     "0": 0
                 }""")
 
+        def test_pretty_subobject(self):
+            with open('foo', 'w') as f:
+                with jsonstreams.Object(f, 4, 0, _ENCODER, pretty=True) as a:
+                    a.iterwrite((str(i), i) for i in range(5))
+                    with a.subobject('foo') as b:
+                        b.iterwrite((str(i), i) for i in range(2))
+
+            expected = {str(i): i for i in range(5)}
+            expected['foo'] = {str(i): i for i in range(2)}
+
+            with open('foo', 'r') as f:
+                actual = json.load(f)
+
+            assert actual == expected
+
+        def test_pretty_subarray(self):
+            with open('foo', 'w') as f:
+                with jsonstreams.Object(f, 4, 0, _ENCODER, pretty=True) as a:
+                    a.iterwrite((str(i), i) for i in range(5))
+                    with a.subarray('foo') as b:
+                        b.iterwrite(range(2))
+
+            expected = {str(i): i for i in range(5)}
+            expected['foo'] = list(range(2))
+
+            with open('foo', 'r') as f:
+                actual = json.load(f)
+
+            assert actual == expected
+
 
 class TestArray(object):
 
@@ -1358,3 +1388,33 @@ class TestArray(object):
                 [
                     0
                 ]""")
+
+        def test_pretty_subobject(self):
+            with open('foo', 'w') as f:
+                with jsonstreams.Array(f, 4, 0, _ENCODER, pretty=True) as a:
+                    a.iterwrite(range(5))
+                    with a.subobject() as b:
+                        b.iterwrite((str(i), i) for i in range(2))
+
+            expected = list(range(5))
+            expected.append({str(i): i for i in range(2)})
+
+            with open('foo', 'r') as f:
+                actual = json.load(f)
+
+            assert actual == expected
+
+        def test_pretty_subarray(self):
+            with open('foo', 'w') as f:
+                with jsonstreams.Array(f, 4, 0, _ENCODER, pretty=True) as a:
+                    a.iterwrite(range(5))
+                    with a.subarray() as b:
+                        b.iterwrite(range(2))
+
+            expected = list(range(5))
+            expected.append(list(range(2)))
+
+            with open('foo', 'r') as f:
+                actual = json.load(f)
+
+            assert actual == expected

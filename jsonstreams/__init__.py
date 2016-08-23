@@ -122,6 +122,7 @@ class BaseWriter(object):
         self.baseindent = baseindent
         self.encoder = encoder
         self.pretty = pretty
+        self.comma = False
 
         if not pretty:
             self.write = self._write_no_comma
@@ -133,10 +134,6 @@ class BaseWriter(object):
                 self.raw_write, ',', newline=True)
         else:
             self.write_comma_literal = functools.partial(self.raw_write, ', ')
-
-    @property
-    def comma(self):
-        return self.write == self._write_comma
 
     def _indent(self):
         return ' ' * self.baseindent * self.indent
@@ -163,6 +160,7 @@ class BaseWriter(object):
     def set_comma(self):
         # replace with the comma version, removeing the need for extra if
         # statements.
+        self.comma = True
         if not self.pretty:
             self.write = self._write_comma
         else:

@@ -6,6 +6,9 @@ next
 
 Bug Fixes:
 
+- Fix a bug with both ObjectWriter and ArrayWriter with pretty printing, in
+  which the comma property wouldn't be properly set.
+  (`#12 https://github.com/dcbaker/jsonstreams/issues/12`)
 - Fix bug with ObjectWriter and pretty printing.
   (`#11 https://github.com/dcbaker/jsonstreams/issues/11`)
 
