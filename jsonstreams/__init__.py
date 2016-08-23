@@ -202,18 +202,21 @@ class ObjectWriter(BaseWriter):
     def _pretty_write_no_comma(self, key, value):
         """Write without a comma."""
         # pylint: disable=arguments-differ
-        self.write_key(key)
-        items = self.encoder.encode(value).rstrip().split('\n')
-        self.raw_write(items[0], newline=True)
-        for each in items[1:-1]:
-            self.raw_write(each, indent=True, newline=True)
-        self.raw_write(items[-1], indent=True)
+        self.__pretty_write(key, value)
         self.set_comma()
 
     def _pretty_write_comma(self, key, value):
         """Write with a comma."""
         # pylint: disable=arguments-differ
         self.write_comma_literal()
+        self.__pretty_write(key, value)
+
+    def __pretty_write(self, key, value):
+        """Write items into object with newlines and proper indenting.
+
+        This shared private method shares code between the comman and no comma
+        versions of pretty_write.
+        """
         self.write_key(key)
         items = self.encoder.encode(value).rstrip().split('\n')
         self.raw_write(items[0], newline=True)
@@ -241,15 +244,16 @@ class ArrayWriter(BaseWriter):
     def _pretty_write_no_comma(self, value):
         """Write without a comma."""
         # pylint: disable=arguments-differ
-        items = self.encoder.encode(value).rstrip().split('\n')
-        for each in items[:-1]:
-            self.raw_write(each, indent=True, newline=True)
-        self.raw_write(items[-1], indent=True)
+        self.__pretty_write(value)
         self.set_comma()
 
     def _pretty_write_comma(self, value):  # pylint: disable=arguments-differ
         """Write with a comma."""
         self.write_comma_literal()
+        self.__pretty_write(value)
+
+    def __pretty_write(self, value):
+        """Write elements into a list, but with proper newlines and indent."""
         items = self.encoder.encode(value).rstrip().split('\n')
         for each in items[:-1]:
             self.raw_write(each, indent=True, newline=True)
