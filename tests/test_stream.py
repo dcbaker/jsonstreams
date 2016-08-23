@@ -752,6 +752,34 @@ class TestObject(object):
 
             assert actual == {"a": 1, "2": 2, "foo": None, "bar": 3}
 
+        def test_pretty_multiple(self):
+            with open('foo', 'w') as f:
+                with jsonstreams.Object(f, 4, 0, _ENCODER, pretty=True) as a:
+                    a.iterwrite((str(i), i) for i in range(5))
+
+            with open('foo', 'r') as f:
+                actual = json.load(f)
+
+            assert actual == {str(i): i for i in range(5)}
+
+        def test_pretty_one(self):
+            with open('foo', 'w') as f:
+                with jsonstreams.Object(f, 4, 0, _ENCODER, pretty=True) as a:
+                    a.iterwrite((str(i), i) for i in range(1))
+
+            with open('foo', 'r') as f:
+                actual = json.load(f)
+
+            assert actual == {str(i): i for i in range(1)}
+
+            with open('foo', 'r') as f:
+                actual = f.read()
+
+            assert actual == textwrap.dedent("""\
+                {
+                    "0": 0
+                }""")
+
 
 class TestArray(object):
 
@@ -1290,3 +1318,43 @@ class TestArray(object):
                 actual = json.load(f)
 
             assert actual == list(range(5)) + ['a']
+
+        def test_pretty_multiple(self):
+            with open('foo', 'w') as f:
+                with jsonstreams.Array(f, 4, 0, _ENCODER, pretty=True) as a:
+                    a.iterwrite(range(5))
+
+            with open('foo', 'r') as f:
+                actual = json.load(f)
+
+            assert actual == list(range(5))
+
+            with open('foo', 'r') as f:
+                actual = f.read()
+
+            assert actual == textwrap.dedent("""\
+                [
+                    0,
+                    1,
+                    2,
+                    3,
+                    4
+                ]""")
+
+        def test_pretty_one(self):
+            with open('foo', 'w') as f:
+                with jsonstreams.Array(f, 4, 0, _ENCODER, pretty=True) as a:
+                    a.iterwrite(range(1))
+
+            with open('foo', 'r') as f:
+                actual = json.load(f)
+
+            assert actual == list(range(1))
+
+            with open('foo', 'r') as f:
+                actual = f.read()
+
+            assert actual == textwrap.dedent("""\
+                [
+                    0
+                ]""")

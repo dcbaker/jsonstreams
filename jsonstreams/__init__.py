@@ -219,10 +219,15 @@ class ObjectWriter(BaseWriter):
         """
         self.write_key(key)
         items = self.encoder.encode(value).rstrip().split('\n')
-        self.raw_write(items[0], newline=True)
-        for each in items[1:-1]:
-            self.raw_write(each, indent=True, newline=True)
-        self.raw_write(items[-1], indent=True)
+        # If the length of items is 1, then the for loop is dead code, and
+        # the final write is incorrect.
+        if len(items) > 1:
+            self.raw_write(items[0], newline=True)
+            for each in items[1:-1]:
+                self.raw_write(each, indent=True, newline=True)
+            self.raw_write(items[-1], indent=True)
+        else:
+            self.raw_write(items[0])
 
 
 class ArrayWriter(BaseWriter):

@@ -1,6 +1,15 @@
 Changes
 =======
 
+next
+-----
+
+Bug Fixes:
+
+- Fix bug with ObjectWriter and pretty printing.
+  (`#11 https://github.com/dcbaker/jsonstreams/issues/11`)
+
+
 0.3.0
 -----
 
