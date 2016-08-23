@@ -4,6 +4,10 @@ Changes
 next
 -----
 
+New Features:
+
+- Add __slots__ to the Writer classes
+
 Bug Fixes:
 
 - Fix a bug with both ObjectWriter and ArrayWriter with pretty printing, in
