@@ -116,6 +116,9 @@ class InvalidTypeError(JSONStreamsError):
 class BaseWriter(object):
     """Private class for writing things."""
 
+    __slots__ = ('fd', 'indent', 'baseindent', 'encoder', 'pretty', 'comma',
+                 'write', 'write_comma_literal')
+
     def __init__(self, fd, indent, baseindent, encoder, pretty):
         self.fd = fd  # pylint: disable=invalid-name
         self.indent = indent
@@ -271,6 +274,8 @@ def _raise(exc, *args, **kwargs):  # pylint: disable=unused-argument
 class Open(object):
     """A helper to allow subelements to be used as context managers."""
 
+    __slots__ = ('__inst', '__callback', 'subarray', 'subobject')
+
     def __init__(self, initializer, callback=None):
         self.__inst = initializer()
         self.__callback = callback
@@ -299,6 +304,8 @@ class _CacheChild(object):
     when called, during initialization, and when it's restore() method is
     called it puts them back.
     """
+
+    __slots__ = ('cached', 'inst')
 
     def __init__(self, inst, **kwargs):
         self.cached = kwargs
