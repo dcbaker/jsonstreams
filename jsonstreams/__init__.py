@@ -83,7 +83,7 @@ __all__ = (
     'Stream',
 )
 
-__version__ = '0.3.0'
+__version__ = '0.3.1'
 
 
 class JSONStreamsError(Exception):
