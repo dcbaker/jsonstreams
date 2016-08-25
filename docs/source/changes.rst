@@ -1,7 +1,7 @@
 Changes
 =======
 
-next
+0.3.2
 -----
 
 New Features:
