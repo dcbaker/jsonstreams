@@ -1,6 +1,14 @@
 Changes
 =======
 
+next
+-----
+
+New Features:
+
+- Proper documentation via readthedocs
+
+
 0.3.1
 -----
 
