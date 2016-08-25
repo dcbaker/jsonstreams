@@ -1,13 +1,13 @@
+Public API
+==========
+
+
 Overview
-========
+--------
 
 The main component is :class:`jsonstreams.Stream`, which provides the interface
 for either an array or an object. The interfaces for this class depend on
 whether it was initialized as an array or an object.
-
-
-Public API
-==========
 
 
 Exceptions
