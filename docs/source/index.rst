@@ -6,11 +6,16 @@
 Welcome to JSONStreams's documentation!
 =======================================
 
+Description
+-----------
+
+.. include:: description.rst
+
+
 Contents:
 
 .. toctree::
    :maxdepth: 2
-
 
 
 Indices and tables
