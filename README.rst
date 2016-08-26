@@ -3,9 +3,11 @@ JSONStreams
 
 .. image:: https://travis-ci.org/dcbaker/jsonstreams.svg?branch=master
     :target: https://travis-ci.org/dcbaker/jsonstreams
+    :alt: Travis CI Status
 
 .. image:: https://ci.appveyor.com/api/projects/status/ocrt9nol8kn3pm1t/branch/master?svg=true
     :target: https://ci.appveyor.com/project/dcbaker/jsonstreams
+    :alt: Appveyor CI Status
 
 
 Source code is available at `github <https://github.com/dcbaker/jsonstreams>`_.
