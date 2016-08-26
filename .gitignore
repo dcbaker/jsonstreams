@@ -1,5 +1,8 @@
 *pyc
 *pyo
+*.c
+*.so
+*.dll
 __pycache__/
 .cache/
 .tox/

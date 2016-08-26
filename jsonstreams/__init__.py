@@ -67,7 +67,11 @@ returning a (key, value) tuple pair.
 ...         a.iterwrite(range(5))
 """
 
-from ._python import Stream
 from .exceptions import *  # pylint: disable=wildcard-import
+
+try:
+    from ._cython import Stream
+except ImportError:
+    from ._python import Stream
 
 __version__ = '0.3.2'

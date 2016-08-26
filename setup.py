@@ -2,6 +2,7 @@ from setuptools import setup, find_packages
 from setuptools.command.test import test as TestCommand
 from codecs import open
 from os import path
+from Cython.Build import cythonize
 
 class Tox(TestCommand):
 
@@ -63,6 +64,7 @@ setup(
     package_data={
         '': ['*pyi'],
     },
+    ext_modules=cythonize('jsonstreams/_cython.pyx'),
     keywords='JSON stream',
     packages=['jsonstreams'],
     cmdclass={'test': Tox}
