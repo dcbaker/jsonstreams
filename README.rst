@@ -9,6 +9,10 @@ JSONStreams
     :target: https://ci.appveyor.com/project/dcbaker/jsonstreams
     :alt: Appveyor CI Status
 
+.. image:: https://readthedocs.org/projects/jsonstreams/badge/?version=latest
+    :target: http://jsonstreams.readthedocs.io/en/stable/?badge=latest
+    :alt: Documentation Status
+
 
 Source code is available at `github <https://github.com/dcbaker/jsonstreams>`_.
 
