@@ -23,11 +23,13 @@
 import json
 import textwrap
 
-import pytest # type: ignore
+import pytest  # type: ignore
 import six
 from six.moves import range
 
 import jsonstreams
+from jsonstreams._python import Array
+from jsonstreams._python import Object
 
 _ENCODER = json.JSONEncoder()  # type: ignore
 
@@ -211,14 +213,14 @@ class TestObject(object):
 
     def test_init(self):
         with open('foo', 'w') as f:
-            jsonstreams.Object(f, 0, 0, _ENCODER)
+            Object(f, 0, 0, _ENCODER)
 
         with open('foo', 'r') as f:
             assert f.read() == '{'
 
     def test_context_manager(self):
         with open('foo', 'w') as f:
-            with jsonstreams.Object(f, 0, 0, _ENCODER) as _:
+            with Object(f, 0, 0, _ENCODER) as _:
                 pass
 
         with open('foo', 'r') as f:
@@ -238,7 +240,7 @@ class TestObject(object):
 
             def test_write_one(self):
                 with open('foo', 'w') as f:
-                    with jsonstreams.Object(f, 0, 0, _ENCODER) as s:
+                    with Object(f, 0, 0, _ENCODER) as s:
                         s.write('foo', 'bar')
 
                 with open('foo', 'r') as f:
@@ -246,7 +248,7 @@ class TestObject(object):
 
             def test_write_two(self):
                 with open('foo', 'w') as f:
-                    with jsonstreams.Object(f, 0, 0, _ENCODER) as s:
+                    with Object(f, 0, 0, _ENCODER) as s:
                         s.write('foo', 'bar')
                         s.write('bar', 'foo')
 
@@ -255,7 +257,7 @@ class TestObject(object):
 
             def test_complex(self):
                 with open('foo', 'w') as f:
-                    with jsonstreams.Object(f, 0, 0, _ENCODER) as s:
+                    with Object(f, 0, 0, _ENCODER) as s:
                         s.write('foo', {"1": 'bar'})
 
                 with open('foo', 'r') as f:
@@ -269,7 +271,7 @@ class TestObject(object):
 
             def test_write_one(self):
                 with open('foo', 'w') as f:
-                    with jsonstreams.Object(f, 4, 0, _ENCODER) as s:
+                    with Object(f, 4, 0, _ENCODER) as s:
                         s.write('foo', 'bar')
 
                 with open('foo', 'r') as f:
@@ -280,7 +282,7 @@ class TestObject(object):
 
             def test_write_two(self):
                 with open('foo', 'w') as f:
-                    with jsonstreams.Object(f, 4, 0, _ENCODER) as s:
+                    with Object(f, 4, 0, _ENCODER) as s:
                         s.write('foo', 'bar')
                         s.write('bar', 'foo')
 
@@ -293,7 +295,7 @@ class TestObject(object):
 
             def test_complex(self):
                 with open('foo', 'w') as f:
-                    with jsonstreams.Object(f, 4, 0, _ENCODER) as s:
+                    with Object(f, 4, 0, _ENCODER) as s:
                         s.write('foo', {"1": 'bar'})
 
                 with open('foo', 'r') as f:
@@ -313,7 +315,7 @@ class TestObject(object):
         ])
         def test_types(self, key, value, expected):
             with open('foo', 'w') as f:
-                with jsonstreams.Object(f, 0, 0, _ENCODER) as s:
+                with Object(f, 0, 0, _ENCODER) as s:
                     s.write(key, value)
 
             with open('foo', 'r') as f:
@@ -322,13 +324,13 @@ class TestObject(object):
         @pytest.mark.parametrize("key", [1, 1.0, None])
         def test_invalid_key_types(self, key):
             with open('foo', 'w') as f:
-                with jsonstreams.Object(f, 0, 0, _ENCODER) as s:
+                with Object(f, 0, 0, _ENCODER) as s:
                     with pytest.raises(jsonstreams.InvalidTypeError):
                         s.write(key, 'foo')
 
         def test_pretty(self):
             with open('foo', 'w') as f:
-                with jsonstreams.Object(f, 4, 0, json.JSONEncoder(indent=4),
+                with Object(f, 4, 0, json.JSONEncoder(indent=4),
                                         pretty=True) as s:
                     s.write("1", {'bar': {"b": 0}})
                     s.write("2", {'fob': {"f": 0}})
@@ -359,7 +361,7 @@ class TestObject(object):
 
         def test_basic(self):
             with open('foo', 'w') as f:
-                s = jsonstreams.Object(f, 0, 0, _ENCODER)
+                s = Object(f, 0, 0, _ENCODER)
                 p = s.subobject('ook')
                 p.write('foo', 'bar')
                 p.close()
@@ -370,7 +372,7 @@ class TestObject(object):
 
         def test_context_manager(self):
             with open('foo', 'w') as f:
-                with jsonstreams.Object(f, 0, 0, _ENCODER) as s:
+                with Object(f, 0, 0, _ENCODER) as s:
                     with s.subobject('ook') as p:
                         p.write('foo', 'bar')
 
@@ -379,7 +381,7 @@ class TestObject(object):
 
         def test_indent(self):
             with open('foo', 'w') as f:
-                s = jsonstreams.Object(f, 4, 0, _ENCODER)
+                s = Object(f, 4, 0, _ENCODER)
                 p = s.subobject('ook')
                 p.write('foo', 'bar')
                 p.close()
@@ -395,7 +397,7 @@ class TestObject(object):
 
         def test_context_manager_indent(self):
             with open('foo', 'w') as f:
-                with jsonstreams.Object(f, 4, 0, _ENCODER) as s:
+                with Object(f, 4, 0, _ENCODER) as s:
                     with s.subobject('ook') as p:
                         p.write('foo', 'bar')
 
@@ -412,7 +414,7 @@ class TestObject(object):
 
             def test_inner(self):
                 with open('foo', 'w') as f:
-                    with jsonstreams.Object(f, 0, 0, _ENCODER) as s:
+                    with Object(f, 0, 0, _ENCODER) as s:
                         with s.subobject('ook') as p:
                             p.write('foo', 'bar')
                             p.write("1", 'bar')
@@ -422,7 +424,7 @@ class TestObject(object):
 
             def test_outer_inner(self):
                 with open('foo', 'w') as f:
-                    with jsonstreams.Object(f, 0, 0, _ENCODER) as s:
+                    with Object(f, 0, 0, _ENCODER) as s:
                         s.write('foo', 'bar')
                         with s.subobject('ook') as p:
                             p.write("1", 'bar')
@@ -432,7 +434,7 @@ class TestObject(object):
 
             def test_inner_outer(self):
                 with open('foo', 'w') as f:
-                    with jsonstreams.Object(f, 0, 0, _ENCODER) as s:
+                    with Object(f, 0, 0, _ENCODER) as s:
                         with s.subobject('ook') as p:
                             p.write("1", 'bar')
                         s.write('foo', 'bar')
@@ -442,7 +444,7 @@ class TestObject(object):
 
             def test_outer_inner_outer(self):
                 with open('foo', 'w') as f:
-                    with jsonstreams.Object(f, 0, 0, _ENCODER) as s:
+                    with Object(f, 0, 0, _ENCODER) as s:
                         s.write("1", 'bar')
                         with s.subobject('ook') as p:
                             p.write("1", 'bar')
@@ -457,7 +459,7 @@ class TestObject(object):
 
             def test_inner(self):
                 with open('foo', 'w') as f:
-                    s = jsonstreams.Object(f, 0, 0, _ENCODER)
+                    s = Object(f, 0, 0, _ENCODER)
                     p = s.subobject("2")
                     p.write("1", 'bar')
                     p.close()
@@ -468,7 +470,7 @@ class TestObject(object):
 
             def test_outer_inner(self):
                 with open('foo', 'w') as f:
-                    s = jsonstreams.Object(f, 0, 0, _ENCODER)
+                    s = Object(f, 0, 0, _ENCODER)
                     s.write("1", 'foo')
                     p = s.subobject("2")
                     p.write("1", 'bar')
@@ -480,7 +482,7 @@ class TestObject(object):
 
             def test_inner_outer(self):
                 with open('foo', 'w') as f:
-                    s = jsonstreams.Object(f, 0, 0, _ENCODER)
+                    s = Object(f, 0, 0, _ENCODER)
                     p = s.subobject("2")
                     p.write("1", 'bar')
                     p.close()
@@ -492,7 +494,7 @@ class TestObject(object):
 
             def test_outer_inner_outer(self):
                 with open('foo', 'w') as f:
-                    s = jsonstreams.Object(f, 0, 0, _ENCODER)
+                    s = Object(f, 0, 0, _ENCODER)
                     s.write('1', 'foo')
                     p = s.subobject('2')
                     p.write('1', 'bar')
@@ -513,7 +515,7 @@ class TestObject(object):
 
         def test_basic(self):
             with open('foo', 'w') as f:
-                s = jsonstreams.Object(f, 0, 0, _ENCODER)
+                s = Object(f, 0, 0, _ENCODER)
                 p = s.subarray('ook')
                 p.write('foo')
                 p.close()
@@ -524,7 +526,7 @@ class TestObject(object):
 
         def test_context_manager(self):
             with open('foo', 'w') as f:
-                with jsonstreams.Object(f, 0, 0, _ENCODER) as s:
+                with Object(f, 0, 0, _ENCODER) as s:
                     with s.subarray('ook') as p:
                         p.write('foo')
 
@@ -533,7 +535,7 @@ class TestObject(object):
 
         def test_indent(self):
             with open('foo', 'w') as f:
-                s = jsonstreams.Object(f, 4, 0, _ENCODER)
+                s = Object(f, 4, 0, _ENCODER)
                 p = s.subarray('ook')
                 p.write('foo')
                 p.close()
@@ -549,7 +551,7 @@ class TestObject(object):
 
         def test_context_manager_indent(self):
             with open('foo', 'w') as f:
-                with jsonstreams.Object(f, 4, 0, _ENCODER) as s:
+                with Object(f, 4, 0, _ENCODER) as s:
                     with s.subarray('ook') as p:
                         p.write('foo')
 
@@ -566,7 +568,7 @@ class TestObject(object):
 
             def test_inner(self):
                 with open('foo', 'w') as f:
-                    with jsonstreams.Object(f, 0, 0, _ENCODER) as s:
+                    with Object(f, 0, 0, _ENCODER) as s:
                         with s.subarray('ook') as p:
                             p.write('foo')
                             p.write(1)
@@ -576,7 +578,7 @@ class TestObject(object):
 
             def test_outer_inner(self):
                 with open('foo', 'w') as f:
-                    with jsonstreams.Object(f, 0, 0, _ENCODER) as s:
+                    with Object(f, 0, 0, _ENCODER) as s:
                         s.write('foo', 'bar')
                         with s.subarray('ook') as p:
                             p.write(1)
@@ -586,7 +588,7 @@ class TestObject(object):
 
             def test_inner_outer(self):
                 with open('foo', 'w') as f:
-                    with jsonstreams.Object(f, 0, 0, _ENCODER) as s:
+                    with Object(f, 0, 0, _ENCODER) as s:
                         with s.subarray('ook') as p:
                             p.write(1)
                         s.write('foo', 'bar')
@@ -596,7 +598,7 @@ class TestObject(object):
 
             def test_outer_inner_outer(self):
                 with open('foo', 'w') as f:
-                    with jsonstreams.Object(f, 0, 0, _ENCODER) as s:
+                    with Object(f, 0, 0, _ENCODER) as s:
                         s.write("1", 'bar')
                         with s.subarray('ook') as p:
                             p.write(1)
@@ -611,7 +613,7 @@ class TestObject(object):
 
             def test_inner(self):
                 with open('foo', 'w') as f:
-                    s = jsonstreams.Object(f, 0, 0, _ENCODER)
+                    s = Object(f, 0, 0, _ENCODER)
                     p = s.subarray("2")
                     p.write(1)
                     p.close()
@@ -622,7 +624,7 @@ class TestObject(object):
 
             def test_outer_inner(self):
                 with open('foo', 'w') as f:
-                    s = jsonstreams.Object(f, 0, 0, _ENCODER)
+                    s = Object(f, 0, 0, _ENCODER)
                     s.write("1", 'foo')
                     p = s.subarray("2")
                     p.write(1)
@@ -634,7 +636,7 @@ class TestObject(object):
 
             def test_inner_outer(self):
                 with open('foo', 'w') as f:
-                    s = jsonstreams.Object(f, 0, 0, _ENCODER)
+                    s = Object(f, 0, 0, _ENCODER)
                     p = s.subarray("2")
                     p.write(1)
                     p.close()
@@ -646,7 +648,7 @@ class TestObject(object):
 
             def test_outer_inner_outer(self):
                 with open('foo', 'w') as f:
-                    s = jsonstreams.Object(f, 0, 0, _ENCODER)
+                    s = Object(f, 0, 0, _ENCODER)
                     s.write('1', 'foo')
                     p = s.subarray('2')
                     p.write(1)
@@ -665,7 +667,7 @@ class TestObject(object):
 
         def test_basic(self):
             with open('foo', 'w') as f:
-                test = jsonstreams.Object(f, 0, 0, _ENCODER)
+                test = Object(f, 0, 0, _ENCODER)
                 test.close()
 
             with open('foo', 'r') as f:
@@ -673,7 +675,7 @@ class TestObject(object):
 
         def test_close(self):
             with open('foo', 'w') as f:
-                test = jsonstreams.Object(f, 0, 0, _ENCODER)
+                test = Object(f, 0, 0, _ENCODER)
                 test.close()
 
                 with pytest.raises(jsonstreams.StreamClosedError):
@@ -681,7 +683,7 @@ class TestObject(object):
 
         def test_write(self):
             with open('foo', 'w') as f:
-                test = jsonstreams.Object(f, 0, 0, _ENCODER)
+                test = Object(f, 0, 0, _ENCODER)
                 test.close()
 
                 with pytest.raises(jsonstreams.StreamClosedError):
@@ -689,7 +691,7 @@ class TestObject(object):
 
         def test_subarray(self):
             with open('foo', 'w') as f:
-                test = jsonstreams.Object(f, 0, 0, _ENCODER)
+                test = Object(f, 0, 0, _ENCODER)
                 test.close()
 
                 with pytest.raises(jsonstreams.StreamClosedError):
@@ -697,7 +699,7 @@ class TestObject(object):
 
         def test_subobject(self):
             with open('foo', 'w') as f:
-                test = jsonstreams.Object(f, 0, 0, _ENCODER)
+                test = Object(f, 0, 0, _ENCODER)
                 test.close()
 
                 with pytest.raises(jsonstreams.StreamClosedError):
@@ -712,14 +714,14 @@ class TestObject(object):
 
         def test_subobject(self):
             with open('foo', 'w') as f:
-                with jsonstreams.Object(f, 0, 0, _ENCODER) as a:
+                with Object(f, 0, 0, _ENCODER) as a:
                     with a.subobject('foo') as b:
                         with pytest.raises(jsonstreams.ModifyWrongStreamError):
                             a.write('foo', 'bar')
 
         def test_subarray(self):
             with open('foo', 'w') as f:
-                with jsonstreams.Object(f, 0, 0, _ENCODER) as a:
+                with Object(f, 0, 0, _ENCODER) as a:
                     with a.subarray('foo') as b:
                         with pytest.raises(jsonstreams.ModifyWrongStreamError):
                             a.write('foo', 'bar')
@@ -733,7 +735,7 @@ class TestObject(object):
 
         def test_basic(self):
             with open('foo', 'w') as f:
-                with jsonstreams.Object(f, 0, 0, _ENCODER) as a:
+                with Object(f, 0, 0, _ENCODER) as a:
                     a.iterwrite(six.iteritems({'a': 1, '2': 2, 'foo': None}))
 
             with open('foo', 'r') as f:
@@ -743,7 +745,7 @@ class TestObject(object):
 
         def test_mixed(self):
             with open('foo', 'w') as f:
-                with jsonstreams.Object(f, 0, 0, _ENCODER) as a:
+                with Object(f, 0, 0, _ENCODER) as a:
                     a.iterwrite(six.iteritems({'a': 1, '2': 2, 'foo': None}))
                     a.write('bar', 3)
 
@@ -754,7 +756,7 @@ class TestObject(object):
 
         def test_pretty_multiple(self):
             with open('foo', 'w') as f:
-                with jsonstreams.Object(f, 4, 0, _ENCODER, pretty=True) as a:
+                with Object(f, 4, 0, _ENCODER, pretty=True) as a:
                     a.iterwrite((str(i), i) for i in range(5))
 
             with open('foo', 'r') as f:
@@ -764,7 +766,7 @@ class TestObject(object):
 
         def test_pretty_one(self):
             with open('foo', 'w') as f:
-                with jsonstreams.Object(f, 4, 0, _ENCODER, pretty=True) as a:
+                with Object(f, 4, 0, _ENCODER, pretty=True) as a:
                     a.iterwrite((str(i), i) for i in range(1))
 
             with open('foo', 'r') as f:
@@ -782,7 +784,7 @@ class TestObject(object):
 
         def test_pretty_subobject(self):
             with open('foo', 'w') as f:
-                with jsonstreams.Object(f, 4, 0, _ENCODER, pretty=True) as a:
+                with Object(f, 4, 0, _ENCODER, pretty=True) as a:
                     a.iterwrite((str(i), i) for i in range(5))
                     with a.subobject('foo') as b:
                         b.iterwrite((str(i), i) for i in range(2))
@@ -797,7 +799,7 @@ class TestObject(object):
 
         def test_pretty_subarray(self):
             with open('foo', 'w') as f:
-                with jsonstreams.Object(f, 4, 0, _ENCODER, pretty=True) as a:
+                with Object(f, 4, 0, _ENCODER, pretty=True) as a:
                     a.iterwrite((str(i), i) for i in range(5))
                     with a.subarray('foo') as b:
                         b.iterwrite(range(2))
@@ -819,14 +821,14 @@ class TestArray(object):
 
     def test_init(self):
         with open('foo', 'w') as f:
-            jsonstreams.Array(f, 0, 0, _ENCODER)
+            Array(f, 0, 0, _ENCODER)
 
         with open('foo', 'r') as f:
             assert f.read() == '['
 
     def test_context_manager(self):
         with open('foo', 'w') as f:
-            with jsonstreams.Array(f, 0, 0, _ENCODER) as _:
+            with Array(f, 0, 0, _ENCODER) as _:
                 pass
 
         with open('foo', 'r') as f:
@@ -846,7 +848,7 @@ class TestArray(object):
 
             def test_write_one(self):
                 with open('foo', 'w') as f:
-                    with jsonstreams.Array(f, 0, 0, _ENCODER) as s:
+                    with Array(f, 0, 0, _ENCODER) as s:
                         s.write('foo')
 
                 with open('foo', 'r') as f:
@@ -854,7 +856,7 @@ class TestArray(object):
 
             def test_write_two(self):
                 with open('foo', 'w') as f:
-                    with jsonstreams.Array(f, 0, 0, _ENCODER) as s:
+                    with Array(f, 0, 0, _ENCODER) as s:
                         s.write('foo')
                         s.write('bar')
 
@@ -863,7 +865,7 @@ class TestArray(object):
 
             def test_complex(self):
                 with open('foo', 'w') as f:
-                    with jsonstreams.Array(f, 0, 0, _ENCODER) as s:
+                    with Array(f, 0, 0, _ENCODER) as s:
                         s.write({"1": 'bar'})
 
                 with open('foo', 'r') as f:
@@ -877,7 +879,7 @@ class TestArray(object):
 
             def test_write_one(self):
                 with open('foo', 'w') as f:
-                    with jsonstreams.Array(f, 4, 0, _ENCODER) as s:
+                    with Array(f, 4, 0, _ENCODER) as s:
                         s.write('foo')
 
                 with open('foo', 'r') as f:
@@ -888,7 +890,7 @@ class TestArray(object):
 
             def test_write_two(self):
                 with open('foo', 'w') as f:
-                    with jsonstreams.Array(f, 4, 0, _ENCODER) as s:
+                    with Array(f, 4, 0, _ENCODER) as s:
                         s.write('foo')
                         s.write('bar')
 
@@ -901,7 +903,7 @@ class TestArray(object):
 
             def test_complex(self):
                 with open('foo', 'w') as f:
-                    with jsonstreams.Array(f, 4, 0, _ENCODER) as s:
+                    with Array(f, 4, 0, _ENCODER) as s:
                         s.write({"1": 'bar'})
 
                 with open('foo', 'r') as f:
@@ -920,7 +922,7 @@ class TestArray(object):
         ])
         def test_types(self, value, expected):
             with open('foo', 'w') as f:
-                with jsonstreams.Array(f, 0, 0, _ENCODER) as s:
+                with Array(f, 0, 0, _ENCODER) as s:
                     s.write(value)
 
             with open('foo', 'r') as f:
@@ -928,7 +930,7 @@ class TestArray(object):
 
         def test_pretty(self):
             with open('foo', 'w') as f:
-                with jsonstreams.Array(f, 4, 0, json.JSONEncoder(indent=4),
+                with Array(f, 4, 0, json.JSONEncoder(indent=4),
                                        pretty=True) as s:
                     s.write({'bar': {"b": 0}})
                     s.write({'fob': {"f": 0}})
@@ -958,7 +960,7 @@ class TestArray(object):
 
         def test_basic(self):
             with open('foo', 'w') as f:
-                s = jsonstreams.Array(f, 0, 0, _ENCODER)
+                s = Array(f, 0, 0, _ENCODER)
                 p = s.subobject()
                 p.write('foo', 'bar')
                 p.close()
@@ -969,7 +971,7 @@ class TestArray(object):
 
         def test_context_manager(self):
             with open('foo', 'w') as f:
-                with jsonstreams.Array(f, 0, 0, _ENCODER) as s:
+                with Array(f, 0, 0, _ENCODER) as s:
                     with s.subobject() as p:
                         p.write('foo', 'bar')
 
@@ -978,7 +980,7 @@ class TestArray(object):
 
         def test_indent(self):
             with open('foo', 'w') as f:
-                s = jsonstreams.Array(f, 4, 0, _ENCODER)
+                s = Array(f, 4, 0, _ENCODER)
                 p = s.subobject()
                 p.write('foo', 'bar')
                 p.close()
@@ -994,7 +996,7 @@ class TestArray(object):
 
         def test_context_manager_indent(self):
             with open('foo', 'w') as f:
-                with jsonstreams.Array(f, 4, 0, _ENCODER) as s:
+                with Array(f, 4, 0, _ENCODER) as s:
                     with s.subobject() as p:
                         p.write('foo', 'bar')
 
@@ -1011,7 +1013,7 @@ class TestArray(object):
 
             def test_inner(self):
                 with open('foo', 'w') as f:
-                    with jsonstreams.Array(f, 0, 0, _ENCODER) as s:
+                    with Array(f, 0, 0, _ENCODER) as s:
                         with s.subobject() as p:
                             p.write('foo', 'bar')
                             p.write("1", 'bar')
@@ -1021,7 +1023,7 @@ class TestArray(object):
 
             def test_outer_inner(self):
                 with open('foo', 'w') as f:
-                    with jsonstreams.Array(f, 0, 0, _ENCODER) as s:
+                    with Array(f, 0, 0, _ENCODER) as s:
                         s.write('foo')
                         with s.subobject() as p:
                             p.write("1", 'bar')
@@ -1031,7 +1033,7 @@ class TestArray(object):
 
             def test_inner_outer(self):
                 with open('foo', 'w') as f:
-                    with jsonstreams.Array(f, 0, 0, _ENCODER) as s:
+                    with Array(f, 0, 0, _ENCODER) as s:
                         with s.subobject() as p:
                             p.write("1", 'bar')
                         s.write('foo')
@@ -1041,7 +1043,7 @@ class TestArray(object):
 
             def test_outer_inner_outer(self):
                 with open('foo', 'w') as f:
-                    with jsonstreams.Array(f, 0, 0, _ENCODER) as s:
+                    with Array(f, 0, 0, _ENCODER) as s:
                         s.write(1)
                         with s.subobject() as p:
                             p.write("1", 'bar')
@@ -1055,7 +1057,7 @@ class TestArray(object):
 
             def test_inner(self):
                 with open('foo', 'w') as f:
-                    s = jsonstreams.Array(f, 0, 0, _ENCODER)
+                    s = Array(f, 0, 0, _ENCODER)
                     p = s.subobject()
                     p.write('foo', 'bar')
                     p.write('1', 'bar')
@@ -1067,7 +1069,7 @@ class TestArray(object):
 
             def test_outer_inner(self):
                 with open('foo', 'w') as f:
-                    s = jsonstreams.Array(f, 0, 0, _ENCODER)
+                    s = Array(f, 0, 0, _ENCODER)
                     s.write('foo')
                     p = s.subobject()
                     p.write('1', 'bar')
@@ -1079,7 +1081,7 @@ class TestArray(object):
 
             def test_inner_outer(self):
                 with open('foo', 'w') as f:
-                    s = jsonstreams.Array(f, 0, 0, _ENCODER)
+                    s = Array(f, 0, 0, _ENCODER)
                     p = s.subobject()
                     p.write('1', 'bar')
                     p.close()
@@ -1091,7 +1093,7 @@ class TestArray(object):
 
             def test_outer_inner_outer(self):
                 with open('foo', 'w') as f:
-                    s = jsonstreams.Array(f, 0, 0, _ENCODER)
+                    s = Array(f, 0, 0, _ENCODER)
                     s.write(1)
                     p = s.subobject()
                     p.write('1', 'bar')
@@ -1110,7 +1112,7 @@ class TestArray(object):
 
         def test_basic(self):
             with open('foo', 'w') as f:
-                s = jsonstreams.Array(f, 0, 0, _ENCODER)
+                s = Array(f, 0, 0, _ENCODER)
                 p = s.subarray()
                 p.write('foo')
                 p.close()
@@ -1121,7 +1123,7 @@ class TestArray(object):
 
         def test_context_manager(self):
             with open('foo', 'w') as f:
-                with jsonstreams.Array(f, 0, 0, _ENCODER) as s:
+                with Array(f, 0, 0, _ENCODER) as s:
                     with s.subarray() as p:
                         p.write('foo')
 
@@ -1130,7 +1132,7 @@ class TestArray(object):
 
         def test_indent(self):
             with open('foo', 'w') as f:
-                s = jsonstreams.Array(f, 4, 0, _ENCODER)
+                s = Array(f, 4, 0, _ENCODER)
                 p = s.subarray()
                 p.write('foo')
                 p.close()
@@ -1146,7 +1148,7 @@ class TestArray(object):
 
         def test_context_manager_indent(self):
             with open('foo', 'w') as f:
-                with jsonstreams.Array(f, 4, 0, _ENCODER) as s:
+                with Array(f, 4, 0, _ENCODER) as s:
                     with s.subarray() as p:
                         p.write('foo')
 
@@ -1163,7 +1165,7 @@ class TestArray(object):
 
             def test_inner(self):
                 with open('foo', 'w') as f:
-                    with jsonstreams.Array(f, 0, 0, _ENCODER) as s:
+                    with Array(f, 0, 0, _ENCODER) as s:
                         with s.subarray() as p:
                             p.write('foo')
                             p.write('bar')
@@ -1173,7 +1175,7 @@ class TestArray(object):
 
             def test_outer_inner(self):
                 with open('foo', 'w') as f:
-                    with jsonstreams.Array(f, 0, 0, _ENCODER) as s:
+                    with Array(f, 0, 0, _ENCODER) as s:
                         s.write('foo')
                         with s.subarray() as p:
                             p.write('bar')
@@ -1183,7 +1185,7 @@ class TestArray(object):
 
             def test_inner_outer(self):
                 with open('foo', 'w') as f:
-                    with jsonstreams.Array(f, 0, 0, _ENCODER) as s:
+                    with Array(f, 0, 0, _ENCODER) as s:
                         with s.subarray() as p:
                             p.write('bar')
                         s.write('foo')
@@ -1193,7 +1195,7 @@ class TestArray(object):
 
             def test_outer_inner_outer(self):
                 with open('foo', 'w') as f:
-                    with jsonstreams.Array(f, 0, 0, _ENCODER) as s:
+                    with Array(f, 0, 0, _ENCODER) as s:
                         s.write(1)
                         with s.subarray() as p:
                             p.write('bar')
@@ -1207,7 +1209,7 @@ class TestArray(object):
 
             def test_inner(self):
                 with open('foo', 'w') as f:
-                    s = jsonstreams.Array(f, 0, 0, _ENCODER)
+                    s = Array(f, 0, 0, _ENCODER)
                     p = s.subarray()
                     p.write('foo')
                     p.write('bar')
@@ -1219,7 +1221,7 @@ class TestArray(object):
 
             def test_outer_inner(self):
                 with open('foo', 'w') as f:
-                    s = jsonstreams.Array(f, 0, 0, _ENCODER)
+                    s = Array(f, 0, 0, _ENCODER)
                     s.write('foo')
                     p = s.subarray()
                     p.write('bar')
@@ -1231,7 +1233,7 @@ class TestArray(object):
 
             def test_inner_outer(self):
                 with open('foo', 'w') as f:
-                    s = jsonstreams.Array(f, 0, 0, _ENCODER)
+                    s = Array(f, 0, 0, _ENCODER)
                     p = s.subarray()
                     p.write('foo')
                     p.close()
@@ -1243,7 +1245,7 @@ class TestArray(object):
 
             def test_outer_inner_outer(self):
                 with open('foo', 'w') as f:
-                    s = jsonstreams.Array(f, 0, 0, _ENCODER)
+                    s = Array(f, 0, 0, _ENCODER)
                     s.write(1)
                     p = s.subarray()
                     p.write(1)
@@ -1262,7 +1264,7 @@ class TestArray(object):
 
         def test_basic(self):
             with open('foo', 'w') as f:
-                test = jsonstreams.Array(f, 0, 0, _ENCODER)
+                test = Array(f, 0, 0, _ENCODER)
                 test.close()
 
             with open('foo', 'r') as f:
@@ -1270,7 +1272,7 @@ class TestArray(object):
 
         def test_close(self):
             with open('foo', 'w') as f:
-                test = jsonstreams.Array(f, 0, 0, _ENCODER)
+                test = Array(f, 0, 0, _ENCODER)
                 test.close()
 
                 with pytest.raises(jsonstreams.StreamClosedError):
@@ -1278,7 +1280,7 @@ class TestArray(object):
 
         def test_write(self):
             with open('foo', 'w') as f:
-                test = jsonstreams.Array(f, 0, 0, _ENCODER)
+                test = Array(f, 0, 0, _ENCODER)
                 test.close()
 
                 with pytest.raises(jsonstreams.StreamClosedError):
@@ -1286,7 +1288,7 @@ class TestArray(object):
 
         def test_subarray(self):
             with open('foo', 'w') as f:
-                test = jsonstreams.Array(f, 0, 0, _ENCODER)
+                test = Array(f, 0, 0, _ENCODER)
                 test.close()
 
                 with pytest.raises(jsonstreams.StreamClosedError):
@@ -1294,7 +1296,7 @@ class TestArray(object):
 
         def test_subobject(self):
             with open('foo', 'w') as f:
-                test = jsonstreams.Array(f, 0, 0, _ENCODER)
+                test = Array(f, 0, 0, _ENCODER)
                 test.close()
 
                 with pytest.raises(jsonstreams.StreamClosedError):
@@ -1309,14 +1311,14 @@ class TestArray(object):
 
         def test_subobject(self):
             with open('foo', 'w') as f:
-                with jsonstreams.Array(f, 0, 0, _ENCODER) as a:
+                with Array(f, 0, 0, _ENCODER) as a:
                     with a.subobject() as b:
                         with pytest.raises(jsonstreams.ModifyWrongStreamError):
                             a.write('foo')
 
         def test_subarray(self):
             with open('foo', 'w') as f:
-                with jsonstreams.Array(f, 0, 0, _ENCODER) as a:
+                with Array(f, 0, 0, _ENCODER) as a:
                     with a.subarray() as b:
                         with pytest.raises(jsonstreams.ModifyWrongStreamError):
                             a.write('foo')
@@ -1330,7 +1332,7 @@ class TestArray(object):
 
         def test_basic(self):
             with open('foo', 'w') as f:
-                with jsonstreams.Array(f, 0, 0, _ENCODER) as a:
+                with Array(f, 0, 0, _ENCODER) as a:
                     a.iterwrite(range(5))
 
             with open('foo', 'r') as f:
@@ -1340,7 +1342,7 @@ class TestArray(object):
 
         def test_mixed(self):
             with open('foo', 'w') as f:
-                with jsonstreams.Array(f, 0, 0, _ENCODER) as a:
+                with Array(f, 0, 0, _ENCODER) as a:
                     a.iterwrite(range(5))
                     a.write('a')
 
@@ -1351,7 +1353,7 @@ class TestArray(object):
 
         def test_pretty_multiple(self):
             with open('foo', 'w') as f:
-                with jsonstreams.Array(f, 4, 0, _ENCODER, pretty=True) as a:
+                with Array(f, 4, 0, _ENCODER, pretty=True) as a:
                     a.iterwrite(range(5))
 
             with open('foo', 'r') as f:
@@ -1373,7 +1375,7 @@ class TestArray(object):
 
         def test_pretty_one(self):
             with open('foo', 'w') as f:
-                with jsonstreams.Array(f, 4, 0, _ENCODER, pretty=True) as a:
+                with Array(f, 4, 0, _ENCODER, pretty=True) as a:
                     a.iterwrite(range(1))
 
             with open('foo', 'r') as f:
@@ -1391,7 +1393,7 @@ class TestArray(object):
 
         def test_pretty_subobject(self):
             with open('foo', 'w') as f:
-                with jsonstreams.Array(f, 4, 0, _ENCODER, pretty=True) as a:
+                with Array(f, 4, 0, _ENCODER, pretty=True) as a:
                     a.iterwrite(range(5))
                     with a.subobject() as b:
                         b.iterwrite((str(i), i) for i in range(2))
@@ -1406,7 +1408,7 @@ class TestArray(object):
 
         def test_pretty_subarray(self):
             with open('foo', 'w') as f:
-                with jsonstreams.Array(f, 4, 0, _ENCODER, pretty=True) as a:
+                with Array(f, 4, 0, _ENCODER, pretty=True) as a:
                     a.iterwrite(range(5))
                     with a.subarray() as b:
                         b.iterwrite(range(2))

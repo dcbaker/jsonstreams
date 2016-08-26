@@ -60,7 +60,7 @@ setup(
             'tox',
         ]
     },
-    package_data = {
+    package_data={
         '': ['*pyi'],
     },
     keywords='JSON stream',
