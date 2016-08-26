@@ -42,13 +42,20 @@ __all__ = (
 )
 
 
-class BaseWriter(object):
+cdef class BaseWriter:
     """Private class for writing things."""
 
-    __slots__ = ('fd', 'indent', 'baseindent', 'encoder', 'pretty', 'comma',
-                 'write', 'write_comma_literal')
+    cdef public object fd
+    cdef public unsigned indent
+    cdef public unsigned baseindent
+    cdef public object encoder
+    cdef public bint pretty
+    cdef public bint comma
+    cdef public object write
+    cdef public object write_comma_literal
 
-    def __init__(self, fd, indent, baseindent, encoder, pretty):
+    def __init__(self, object fd, unsigned indent, unsigned baseindent,
+                 object encoder, bint pretty):
         self.fd = fd  # pylint: disable=invalid-name
         self.indent = indent
         self.baseindent = baseindent
@@ -67,29 +74,17 @@ class BaseWriter(object):
         else:
             self.write_comma_literal = functools.partial(self.raw_write, ', ')
 
-    def _indent(self):
+    cdef str _indent(self) :
         return ' ' * self.baseindent * self.indent
 
-    def raw_write(self, value, indent=False, newline=False):
+    cpdef raw_write(self, str value, bint indent=False, bint newline=False):
         if indent:
             self.fd.write(self._indent())
         self.fd.write(value)
         if newline:
             self.fd.write('\n')
 
-    def _write_no_comma(self):
-        """Baseish class."""
-
-    def _write_comma(self):
-        """Baseish class."""
-
-    def _pretty_write_no_comma(self):
-        """Baseish class."""
-
-    def _pretty_write_comma(self):
-        """Baseish class."""
-
-    def set_comma(self):
+    cpdef set_comma(self):
         # replace with the comma version, removeing the need for extra if
         # statements.
         self.comma = True
@@ -99,49 +94,46 @@ class BaseWriter(object):
             self.write = self._pretty_write_comma
 
 
-class ObjectWriter(BaseWriter):
+cdef class ObjectWriter(BaseWriter):
     """A Writer class specifically for Objects.
 
     Supports writing keys and values.
     """
 
-    def write_key(self, key):
+    cpdef write_key(self, str key):
         """Write a key for an object.
 
         This will enforce that a key must be a string type, since that's a
         requirement of JSON.
         """
-        if not isinstance(key, (six.text_type, six.binary_type)):
-            raise InvalidTypeError('Only string or bytes types can be used as '
-                                   'keys in JSON objects')
         self.raw_write(self.encoder.encode(key), indent=self.indent)
         self.raw_write(': ')
 
-    def _write_no_comma(self, key, value):  # pylint: disable=arguments-differ
+    cpdef _write_no_comma(self, str key, object value):  # pylint: disable=arguments-differ
         """Write without a comma."""
         self.write_key(key)
         self.raw_write(self.encoder.encode(value))
         self.set_comma()
 
-    def _write_comma(self, key, value):  # pylint: disable=arguments-differ
+    cpdef _write_comma(self, str key, object value):  # pylint: disable=arguments-differ
         """Write with a comma."""
         self.write_comma_literal()
         self.write_key(key)
         self.raw_write(self.encoder.encode(value))
 
-    def _pretty_write_no_comma(self, key, value):
+    cpdef _pretty_write_no_comma(self, str key, object value):
         """Write without a comma."""
         # pylint: disable=arguments-differ
         self.__pretty_write(key, value)
         self.set_comma()
 
-    def _pretty_write_comma(self, key, value):
+    cpdef _pretty_write_comma(self, str key, object value):
         """Write with a comma."""
         # pylint: disable=arguments-differ
         self.write_comma_literal()
         self.__pretty_write(key, value)
 
-    def __pretty_write(self, key, value):
+    cdef __pretty_write(self, str key, object value):
         """Write items into object with newlines and proper indenting.
 
         This shared private method shares code between the comman and no comma
@@ -152,7 +144,7 @@ class ObjectWriter(BaseWriter):
         # If the length of items is 1, then the for loop is dead code, and
         # the final write is incorrect.
         if len(items) > 1:
-            self.raw_write(items[0], newline=True)
+            self.raw_write(items[0], indent=False, newline=True)
             for each in items[1:-1]:
                 self.raw_write(each, indent=True, newline=True)
             self.raw_write(items[-1], indent=True)
@@ -160,34 +152,34 @@ class ObjectWriter(BaseWriter):
             self.raw_write(items[0])
 
 
-class ArrayWriter(BaseWriter):
+cdef class ArrayWriter(BaseWriter):
     """Writer for Arrays.
 
     Supports writing only values.
     """
 
-    def _write_no_comma(self, value):  # pylint: disable=arguments-differ
+    cpdef _write_no_comma(self, object value):  # pylint: disable=arguments-differ
         """Write without a comma."""
         self.raw_write(self.encoder.encode(value), indent=self.indent)
         self.set_comma()
 
-    def _write_comma(self, value):  # pylint: disable=arguments-differ
+    cpdef _write_comma(self, object value):  # pylint: disable=arguments-differ
         """Write with a comma."""
         self.write_comma_literal()
         self.raw_write(self.encoder.encode(value), indent=self.indent)
 
-    def _pretty_write_no_comma(self, value):
+    cpdef _pretty_write_no_comma(self, object value):
         """Write without a comma."""
         # pylint: disable=arguments-differ
         self.__pretty_write(value)
         self.set_comma()
 
-    def _pretty_write_comma(self, value):  # pylint: disable=arguments-differ
+    cpdef _pretty_write_comma(self, object value):  # pylint: disable=arguments-differ
         """Write with a comma."""
         self.write_comma_literal()
         self.__pretty_write(value)
 
-    def __pretty_write(self, value):
+    cdef __pretty_write(self, object value):
         """Write elements into a list, but with proper newlines and indent."""
         items = self.encoder.encode(value).rstrip().split('\n')
         for each in items[:-1]:
@@ -200,12 +192,15 @@ def _raise(exc, *args, **kwargs):  # pylint: disable=unused-argument
     raise exc
 
 
-class Open(object):
+cdef class Open:
     """A helper to allow subelements to be used as context managers."""
 
-    __slots__ = ('__inst', '__callback', 'subarray', 'subobject')
+    cdef object __inst
+    cdef object __callback
+    cdef public object subarray
+    cdef public object subobject
 
-    def __init__(self, initializer, callback=None):
+    def __init__(self, object initializer, object callback=None):
         self.__inst = initializer()
         self.__callback = callback
         self.subarray = self.__inst.subarray
@@ -214,15 +209,15 @@ class Open(object):
     def write(self, *args, **kwargs):
         self.__inst.write(*args, **kwargs)
 
-    def __enter__(self):
+    cpdef __enter__(self):
         return self.__inst
 
-    def close(self):
+    cpdef close(self):
         self.__inst.close()
         if self.__callback is not None:
             self.__callback()
 
-    def __exit__(self, etype, evalue, traceback):
+    cpdef __exit__(self, etype, evalue, traceback):
         self.close()
 
 
