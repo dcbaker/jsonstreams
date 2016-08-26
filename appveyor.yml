@@ -11,39 +11,39 @@ clone_depth: 100
 environment:
     matrix:
         - PYTHON: C:\Python27
-          TOXENV: "py27"
+          TOXENV: "py27-{pure,native}"
 
         - PYTHON: C:\Python33
-          TOXENV: "py33"
+          TOXENV: "py33-{pure,native}"
 
         - PYTHON: C:\Python34
-          TOXENV: "py34"
+          TOXENV: "py34-{pure,native}"
 
         - PYTHON: C:\Python35
-          TOXENV: "py35"
+          TOXENV: "py35-{pure,native}"
 
         - PYTHON: C:\Python27-x64
-          TOXENV: "py27"
+          TOXENV: "py27-{pure,native}"
 
         - PYTHON: C:\Python33-x64
-          TOXENV: "py33"
+          TOXENV: "py33-{pure,native}"
           DISTUTILS_USE_SDK: "1"
 
         - PYTHON: C:\Python34-x64
-          TOXENV: "py34"
+          TOXENV: "py34-{pure,native}"
           DISTUTILS_USE_SDK: "1"
 
         - PYTHON: C:\Python35-x64
-          TOXENV: "py35"
+          TOXENV: "py35-{pure,native}"
 
         - PYTHON: C:\Python35
-          TOXENV: "pylint"
+          TOXENV: "pylint-{pure,native}"
 
         - PYTHON: C:\Python35
-          TOXENV: "style"
+          TOXENV: "style-{pure,native}"
 
         - PYTHON: C:\Python35
-          TOXENV: "mypy"
+          TOXENV: "mypy-{pure,native}"
 
 init:
     - ps: echo $env:TOXENV
