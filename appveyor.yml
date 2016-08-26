@@ -51,6 +51,7 @@ init:
 
 install:
     - '%PYTHON%\Scripts\pip install tox'
+    - '%PYTHON%\Scripts\pip install wheel'
 
 test_script:
     - "build.cmd %PYTHON%\\python.exe setup.py test"
