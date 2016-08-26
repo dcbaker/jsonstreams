@@ -53,10 +53,10 @@ install:
     - '%PYTHON%\Scripts\pip install tox'
 
 test_script:
-    - 'build.cmd %PYTHON%\\Python.exe setup.py test'
+    - "build.cmd %PYTHON%\\python.exe setup.py test"
 
 after_test:
-    - 'build.cmd %PYTHON%\\Python.exe setup.py bdist_wheel'
+    - "build.cmd %PYTHON%\\python.exe setup.py bdist_wheel"
 
 on_failure:
     - ps: dir "env:"
