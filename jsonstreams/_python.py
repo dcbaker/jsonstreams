@@ -33,39 +33,13 @@ except ImportError:
 
 import six
 
+from .exceptions import InvalidTypeError
+from .exceptions import ModifyWrongStreamError
+from .exceptions import StreamClosedError
+
 __all__ = (
-    'InvalidTypeError',
-    'ModifyWrongStreamError',
-    'StreamClosedError',
     'Stream',
 )
-
-
-class JSONStreamsError(Exception):
-    """Base exception for jsonstreams."""
-
-
-class StreamClosedError(JSONStreamsError):
-    """Error raised when writing into a closed Element."""
-
-
-class ModifyWrongStreamError(JSONStreamsError):
-    """This exception is raised when writing to a parent when a child is opened.
-
-    Because of the streaming nature of this module, one cannot write into a
-    parent without first closing the child, since there is no way to put the
-    data in the parent while the child is opened.
-
-    This Exception should not be caught, it is a fatal exception.
-    """
-
-
-class InvalidTypeError(JSONStreamsError):
-    """An exception raised when an invalid type is passed.
-
-    Sometimes a type is invalid for certain purposes. For example, a numeric
-    type or null cannot be used as a key in a JSON object.
-    """
 
 
 class BaseWriter(object):

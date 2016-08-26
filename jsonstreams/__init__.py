@@ -68,5 +68,6 @@ returning a (key, value) tuple pair.
 """
 
 from ._python import Stream
+from .exceptions import *  # pylint: disable=wildcard-import
 
 __version__ = '0.3.2'
