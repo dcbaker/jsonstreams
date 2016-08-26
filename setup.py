@@ -25,10 +25,11 @@ class Tox(TestCommand):
         #import here, cause outside the eggs aren't loaded
         import tox
         import shlex
-        args = self.tox_args
-        if args:
-            args = shlex.split(self.tox_args)
-        tox.cmdline(args=args)
+        # args = self.tox_args
+        # if args:
+            # args = shlex.split(self.tox_args)
+        # tox.cmdline(args=args)
+        tox.cmdline()
 
 here = path.abspath(path.dirname(__file__))
 
