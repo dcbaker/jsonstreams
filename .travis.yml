@@ -2,10 +2,10 @@ language: python
 python: 3.5
 cache: pip
 env:
-    - TOX_ENV="py27"
-    - TOX_ENV="py33"
-    - TOX_ENV="py34"
-    - TOX_ENV="py35"
+    - TOX_ENV="py27-{pure,native}"
+    - TOX_ENV="py33-{pure,native}"
+    - TOX_ENV="py34-{pure,native}"
+    - TOX_ENV="py35-{pure,native}"
     - TOX_ENV="pylint"
     - TOX_ENV="style"
     - TOX_ENV="mypy"
