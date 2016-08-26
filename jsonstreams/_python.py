@@ -25,7 +25,6 @@ This is a pure python fallback for those that don't have cython or don't want
 cython.
 """
 
-import copy
 import functools
 try:
     import simplejson as json  # type: ignore
