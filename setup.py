@@ -2,7 +2,11 @@ from setuptools import setup, find_packages
 from setuptools.command.test import test as TestCommand
 from codecs import open
 from os import path
-from Cython.Build import cythonize
+
+try:
+    from Cython.Build import cythonize
+except ImportError:
+    cythonize = lambda a: None
 
 class Tox(TestCommand):
 
