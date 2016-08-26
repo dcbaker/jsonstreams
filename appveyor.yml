@@ -59,6 +59,9 @@ test_script:
 after_test:
     - "build.cmd %PYTHON%\\python.exe setup.py bdist_wheel"
 
+artifacts:
+    - path: dist\*
+
 on_failure:
     - ps: dir "env:"
     - ps: get-content .tox\*\log\*
