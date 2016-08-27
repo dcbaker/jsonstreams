@@ -37,7 +37,7 @@ here = path.abspath(path.dirname(__file__))
 with open(path.join(here, 'README.rst'), encoding='utf-8') as f:
     long_description = f.read()
 
-settings = dict(
+setup(
     name='jsonstreams',
     version='0.3.2',
     description='A JSON streaming writer',
@@ -69,12 +69,8 @@ settings = dict(
     package_data={
         '': ['*pyi'],
     },
+    ext_modules=cythonize('jsonstreams/_cython.pyx'),
     keywords='JSON stream',
     packages=['jsonstreams'],
     cmdclass={'test': Tox}
 )
-
-try:
-    setup(ext_modules=cythonize('jsonstreams/_cython.pyx'), **settings)
-except SystemExit:
-    setup(**settings)
