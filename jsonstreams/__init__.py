@@ -70,7 +70,7 @@ returning a (key, value) tuple pair.
 from .exceptions import *  # pylint: disable=wildcard-import
 
 try:
-    from ._cython import Stream
+    from ._cython import Stream  # type: ignore
 except ImportError:
     from ._python import Stream
 
