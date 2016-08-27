@@ -1,0 +1,3 @@
+include jsonstreams/*.py
+include jsonstreams/*.pyi
+include jsonstreams/*.pyx

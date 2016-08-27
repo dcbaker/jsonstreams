@@ -69,7 +69,7 @@ setup(
     package_data={
         '': ['*pyi'],
     },
-    ext_modules=cythonize('jsonstreams/_cython.pyx'),
+    ext_modules=cythonize('jsonstreams/*.pyx'),
     keywords='JSON stream',
     packages=['jsonstreams'],
     cmdclass={'test': Tox}
