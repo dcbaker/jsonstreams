@@ -10,29 +10,31 @@ clone_depth: 100
 
 environment:
     matrix:
-        - PYTHON: C:\Python27
-          TOXENV: "py27-{pure,native}"
+        #- PYTHON: C:\Python27
+          #TOXENV: "py27-{pure,native}"
 
-        - PYTHON: C:\Python33
-          TOXENV: "py33-{pure,native}"
+        #- PYTHON: C:\Python33
+          #TOXENV: "py33-{pure,native}"
 
-        - PYTHON: C:\Python34
-          TOXENV: "py34-{pure,native}"
+        #- PYTHON: C:\Python34
+          #TOXENV: "py34-{pure,native}"
 
-        - PYTHON: C:\Python35
-          TOXENV: "py35-{pure,native}"
+        #- PYTHON: C:\Python35
+          #TOXENV: "py35-{pure,native}"
 
-        - PYTHON: C:\Python27-x64
-          TOXENV: "py27-{pure,native}"
+        #- PYTHON: C:\Python27-x64
+          #TOXENV: "py27-{pure,native}"
 
         - PYTHON: C:\Python33-x64
           TOXENV: "py33-{pure,native}"
+          DISTUTILS_USE_SDK: "1"
 
         - PYTHON: C:\Python34-x64
           TOXENV: "py34-{pure,native}"
+          DISTUTILS_USE_SDK: "1"
 
-        - PYTHON: C:\Python35-x64
-          TOXENV: "py35-{pure,native}"
+        #- PYTHON: C:\Python35-x64
+          #TOXENV: "py35-{pure,native}"
 
 
 init:
@@ -42,7 +44,7 @@ init:
 install:
     - '%PYTHON%\Scripts\pip install tox'
     - '%PYTHON%\Scripts\pip install wheel'
-    - '%PYTHON%\Scripts\pip install cython'
+    - 'build.cmd %PYTHON%\Scripts\pip install cython'
 
 test_script:
     - "build.cmd %PYTHON%\\python.exe setup.py test"
