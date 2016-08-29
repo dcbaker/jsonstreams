@@ -16,8 +16,6 @@ JSONStreams
 
 Source code is available at `github <https://github.com/dcbaker/jsonstreams>`_.
 
-Documentation is available at `readthedocs <https://jsonstreams.readthedocs.io/>`_.
-
 The code is licensed MIT. See the included LICENSE file for the exact terms.
 
 
