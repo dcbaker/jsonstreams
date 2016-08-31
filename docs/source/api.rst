@@ -186,7 +186,8 @@ Classes
 
    The Object constructor is not considered a public API, and is not documented
    here because it is not guaranteed according to the `Semantic Versioning
-   <http://semver.org>`_ standard.
+   <http://semver.org>`_ standard. All other public methods, however are
+   considered public API.
 
    This class represents an object in a JSON document. It provides as public
    API all of the methods necessary to write into the stream and to close it.
@@ -265,7 +266,8 @@ Classes
 
    The Array constructor is not considered a public API, and is not documented
    here because it is not guaranteed according to the `Semantic Versioning
-   <http://semver.org>`_ standard.
+   <http://semver.org>`_ standard. All other public methods are considered
+   public API.
 
    This class represents an array in a JSON document. It provides as public
    API all of the methods necessary to write into the stream and to close it.
