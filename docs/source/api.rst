@@ -5,9 +5,9 @@ Public API
 Overview
 --------
 
-The main component is :class:`jsonstreams.Stream`, which provides the interface
-for either an array or an object. The interfaces for this class depend on
-whether it was initialized as an array or an object.
+The main component is :py:class:`jsonstreams.Stream`, which provides the
+interface for either an array or an object. The interfaces for this class
+depend on whether it was initialized as an array or an object.
 
 
 Exceptions
@@ -124,7 +124,7 @@ Classes
     negative effect on performance.
 
     This class can also be used as a context manager (used with the with
-    statement), which will automatically call the :py:meth:`Stream.close`
+    statement), which will automatically call the :py:meth:`.Stream.close`
     method when exiting the context.
 
     .. code-block:: python
