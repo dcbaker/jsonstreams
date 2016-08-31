@@ -47,7 +47,7 @@ A simple example looks like this
 
 .. code-block:: python
     
-    with jsonstreams.Stream('foo', 'object') as s:
+    with jsonstreams.Stream('foo', jsonstreams.Type.object) as s:
         s.write('foo', 'bar')
         with s.subobject('a') as a:
             a.write(1, 'foo')
@@ -67,6 +67,6 @@ is unnecessary:
     mylist = list(range(10))
     mydict = {a: b for a in range(10) for b in 'abcdefghij'}
 
-    with jsonstreams.Stream('foo', 'object') as s:
+    with jsonstreams.Stream('foo', jsonstreams.Type.object) as s:
         s.write('list', mylist)
         s.write('dict', mydict)
