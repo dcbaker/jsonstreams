@@ -13,7 +13,7 @@ whether it was initialized as an array or an object.
 Exceptions
 ----------
 
-.. py:class:: JsonStreamsError(message)
+.. py:exception:: JsonStreamsError(message)
 
     A base exception class for other JSONstreams errors.
 
@@ -21,14 +21,14 @@ Exceptions
     :type message: str (python 3) or unicode (python 2)
 
 
-.. py:class:: ModifyWrongStreamError(message)
+.. py:exception:: ModifyWrongStreamError(message)
 
     An exception raised when trying to modify on object within the stream which
     is not in focus.
 
     Because JSON is so strictly defined, and this module writes out all data
     into the stream immediately without building any intermediate data
-    structures it is impossible to write into a parent while a sub-stream is
+    structures, it is impossible to write into a parent while a sub-stream is
     opened. This exception will be raised in that case.
 
     It is not advised to handle this exception, it is almost certainly a
@@ -44,7 +44,7 @@ Exceptions
         ModifyWrongStreamError
 
 
-.. py:class:: InvalidTypeError(message)
+.. py:exception:: InvalidTypeError(message)
 
     An exception that is raised when an invalid type is passed for an argument.
     Primarily this will be raised from the :py:meth:`.Object.write` and
@@ -67,7 +67,7 @@ Exceptions
             with s.subobject(1) as b:
         InvalidTypeError
 
-.. py:class:: StreamClosedError(message)
+.. py:exception:: StreamClosedError(message)
 
     An exception that is raised when trying to write into an
     :py:class:`.Object` or :py:class:`.Array` after the close() method has
