@@ -22,6 +22,10 @@
 """Stub file for __init__.py."""
 
 from typing import *
+try:
+    import enum
+except ImportError:
+    import enum34 as enum  # type: ignore
 
 JSONObject = Dict[Text, Any]
 JSONArray = List[Any]
@@ -83,7 +87,7 @@ class Array(object):
     def __enter__(self) -> Array: ...
 
 class Stream(object):
-    def __init__(self, jtype: Text, filename: Optional[Text],
+    def __init__(self, jtype: Type, filename: Optional[Text],
                  fd: Optional[IO[Text]], indent: Optional[int],
                  pretty: Optional[bool], encoder: Encoder) -> None: ...
     def subobject(self) -> Object: ...

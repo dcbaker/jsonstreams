@@ -51,8 +51,11 @@ setup(
         'Programming Language :: Python :: 3.5',
         'Intended Audience :: Developers',
     ],
-    install_requires=['six'],
+    install_requires=[
+        'six',
+    ],
     extras_require={
+        ':python_version < "3.4"': ['enum34'],
         'recomended': [
             'simplejson',
         ],
@@ -60,7 +63,7 @@ setup(
             'tox',
         ]
     },
-    package_data = {
+    package_data={
         '': ['*pyi'],
     },
     keywords='JSON stream',

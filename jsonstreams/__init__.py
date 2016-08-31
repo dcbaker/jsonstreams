@@ -36,14 +36,14 @@ Create a Stream instance, which will be either an object (in JSON terminology,
 dict in python terminology), or an array (list in python terminology). Then use
 the write method to write elements into the file.
 
->>> with Stream('array', filename='foo') as s:
+>>> with Stream(Type.array, filename='foo') as s:
 ...     s.write('foo')
 ...     s.write('bar')
 
 Each element can also open a subelement, either via the subarray() or
 subobject() method.
 
->>> with Stream('array', filename='foo') as s:
+>>> with Stream(Type.array, filename='foo') as s:
 ...     s.write('foo')
 ...     with s.subobject() as o:
 ...         o.write('1', 'bar')
@@ -51,7 +51,7 @@ subobject() method.
 Any object that can be serialized can be passed (although passing some elements
 as object keys is not supported, and should not be passed).
 
->>> with Stream('object', filename='foo') as s:
+>>> with Stream(Type.object, filename='foo') as s:
 ...     s.write('foo', {'foo': 'bar'})
 
 It is very important to note that while the Array and Object classes present
@@ -61,7 +61,7 @@ requires two elements, the key and the value. With iteritems Array accepts a
 an iterable returning a single valid item, while Object accepts an iterable
 returning a (key, value) tuple pair.
 
->>> with Stream('object', filename='foo') as s:
+>>> with Stream(Type.object, filename='foo') as s:
 ...     s.iterwrite(((str(k), k) for k in range(5)))
 ...     with s.subarray('foo') as a:
 ...         a.iterwrite(range(5))
@@ -73,6 +73,10 @@ try:
     import simplejson as json  # type: ignore
 except ImportError:
     import json  # type: ignore
+try:
+    import enum
+except ImportError:
+    import enum34 as enum  # type: ignore
 
 import six
 
@@ -81,6 +85,7 @@ __all__ = (
     'ModifyWrongStreamError',
     'StreamClosedError',
     'Stream',
+    'Type',
 )
 
 __version__ = '0.3.2'
@@ -395,7 +400,7 @@ class Object(object):
         meant for use with generators or the like.
 
         >>> gen = ((str(s), str(k)) for s in range(5) for k in range(5))
-        >>> with Stream('object', filename='foo') as s:
+        >>> with Stream(Type.object, filename='foo') as s:
         ...     s.iterwrite(gen)
         """
         for key, value in args:
@@ -458,7 +463,7 @@ class Array(object):
         meant for use with generators or the like.
 
         >>> gen = (str(s) for s in range(5))
-        >>> with Stream('array', filename='foo') as s:
+        >>> with Stream(Type.array, filename='foo') as s:
         ...     s.iterwrite(gen)
         """
         for value in args:
@@ -494,6 +499,13 @@ class Array(object):
         self.close()
 
 
+class Type(enum.Enum):
+    """The type of object to write."""
+
+    object = 1
+    array = 2
+
+
 class Stream(object):
     """A JSON stream object.
 
@@ -506,8 +518,8 @@ class Stream(object):
 
     Arguments:
     filename -- the name of the file to open
-    jtype    -- either 'object' or 'array', this will set the type of the
-                stream's root.
+    jtype    -- A value of the jsonstreams.Type enum. this will set the type of
+                the stream's root.
 
     Keyword Arguments:
     indent   -- How much to indent each level, if set to 0 no indent will be
@@ -521,14 +533,13 @@ class Stream(object):
     """
 
     _types = {
-        'object': Object,
-        'array': Array,
+        Type.object: Object,
+        Type.array: Array,
     }
 
     def __init__(self, jtype, filename=None, fd=None, indent=0, pretty=False,
                  encoder=json.JSONEncoder):
         """Constructor."""
-        assert jtype in ['object', 'array']
         assert filename or fd
 
         self.__fd = fd or open(filename, 'w')
@@ -542,8 +553,8 @@ class Stream(object):
         """Write values into the stream.
 
         This method wraps either Object.write or Array.write, depending on
-        whether it was initialzed with the 'object' argument or the 'array'
-        argument.
+        whether it was initialzed with the Type.object argument or the
+        Type.array argument.
         """
         self.__inst.write(*args, **kwargs)
 

@@ -1,6 +1,15 @@
 Changes
 =======
 
+next
+--
+
+New Features:
+
+- Use an enum rather than a string to set the object type in Stream.
+  For python < 3.4 this adds a new requirement on enum34
+
+
 0.3.2
 -----
 

@@ -38,7 +38,7 @@ Exceptions
 
     .. code-block:: python
         
-        with jsonstreams.Stream('object', filename='foo') as s:
+        with jsonstreams.Stream(Type.object, filename='foo') as s:
             with s.subobject('bar') as b:
                 s.write('foo', 'bar')
         ModifyWrongStreamError
@@ -63,7 +63,7 @@ Exceptions
 
     .. code-block:: python
         
-        with jsonstreams.Stream('object', filename='foo') as s:
+        with jsonstreams.Stream(Type.object, filename='foo') as s:
             with s.subobject(1) as b:
         InvalidTypeError
 
@@ -78,7 +78,7 @@ Exceptions
 
     .. code-block:: python
         
-        with jsonstreams.Stream('object', filename='foo') as s:
+        with jsonstreams.Stream(Type.object, filename='foo') as s:
             with s.subobject(1) as b:
                 b.write('foo', 'bar)
             b.write('foo', 'bar)
@@ -88,6 +88,19 @@ Exceptions
 
 Classes
 -------
+
+.. py:class:: Type
+
+    This is an enum that provides valid types for the Stream class.
+
+    .. py:attribute:: object
+    
+        A JSON object
+
+    .. py:attribute:: array
+
+        A JSON array
+
 
 .. py:class:: Stream(jtype, filename=none, fd=none, indent=0, pretty=false, encoder=json.JSONencoder)
 
@@ -116,10 +129,10 @@ Classes
 
     .. code-block:: python
 
-        with jsonwriter.Stream('array', filename='foo') as s:
+        with jsonwriter.Stream(jsonstreams.Type.array, filename='foo') as s:
             s.write('foo')
 
-    :arg str jtype: Either 'object' or 'array', sets the root object type.
+    :arg Type jtype: A value of the :py:class:`.Type` enum.
     :keyword filename: If set this will be opened and the stream written into it.
     :type filename: str or None
     :keyword file fd: A file-like object defining a write and close method.
@@ -131,19 +144,19 @@ Classes
     .. py:method:: write
 
         This method will differ in signature depending on whether jtype is
-        'object' or 'array'.
+        Type.array or Type.object.
 
-        If 'array' then this method is an alias for :py:meth:`.Array.write`.
-        If 'object' then this method is an alias for :py:meth:`.Object.write`.
+        If Type.array then this method is an alias for :py:meth:`.Array.write`.
+        If Type.'object then this method is an alias for :py:meth:`.Object.write`.
 
     .. py:method:: iterwrite
 
         This method will differ in signature depending on whether jtype is
-        'object' or 'array'.
+        Type.object or Type.array.
 
-        If 'array' then this method is an alias for
+        If Type.array then this method is an alias for
         :py:meth:`.Array.iterwrite`.
-        If 'object' then this method is an alias for
+        If Type.object then this method is an alias for
         :py:meth:`.Object.iterwrite`.
 
     .. py:method:: close
@@ -155,7 +168,7 @@ Classes
     .. py:method:: subobject
 
         This method will differ in signature depending on whether jtype is
-        'object' or 'array'.
+        Type.object or Type.array.
 
         This method will open a new object in the stream by calling either
         :py:meth:`.Object.subobject` or :py:meth:`.Array.subobject`
@@ -163,7 +176,7 @@ Classes
     .. py:method:: subarray
 
         This method will differ in signature depending on whether jtype is
-        'object' or 'array'.
+        Type.object or Type.array.
 
         This method will open a new array in the stream by calling either
         :py:meth:`.Object.subarray` or :py:meth:`.Array.subarray`
@@ -227,7 +240,7 @@ Classes
 
         .. code-block:: python
 
-            with jsonstreams.Stream('object', filename='foo') as s:
+            with jsonstreams.Stream(Type.object, filename='foo') as s:
                 s.iterwrite((str(s), s) for s in range(5))
 
         :param args: An iterator returning key value pairs
@@ -297,7 +310,7 @@ Classes
 
         .. code-block:: python
 
-            with jsonstreams.Stream('object', filename='foo') as s:
+            with jsonstreams.Stream(Type.object, filename='foo') as s:
                 s.iterwrite(range(10, step=2))
 
         :param args: An iterator returning key value pairs
