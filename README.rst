@@ -43,7 +43,7 @@ managers are recommended to ensure that each container is closed properly.
 Basic Usage
 ###########
 
-A simple use looks like this
+A simple example looks like this
 
 .. code-block:: python
     
@@ -60,12 +60,12 @@ corrected.
 
 It is possible to write any value that the encoder (json.JSONEncoder by
 default) can encode, so iterating over lists or dictionaries to write them in
-is unnecessary
+is unnecessary:
 
 .. code-block:: python
 
     mylist = list(range(10))
-    mydict = {a, b, for a in range(10), for b in 'abcdefghij'}
+    mydict = {a: b for a in range(10) for b in 'abcdefghij'}
 
     with jsonstreams.Stream('foo', 'object') as s:
         s.write('list', mylist)
