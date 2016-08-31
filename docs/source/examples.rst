@@ -5,6 +5,9 @@ Examples
 These are examples of how you might use this library
 
 
+Basic
+-----
+
 As an object with a filename:
 
 .. code-block:: python
@@ -40,3 +43,35 @@ As an array with an fd:
                 b.write('y')
                 b.write('z')
             s.write('oink')
+
+
+Customizing the encoder
+-----------------------
+
+The encoder can be customized to allow complex types to be passed in without
+having to convert them into types that json.JSONEncoder can natively
+understand. It can be done by subclassing the JSONEncoder, but this isn't
+recomended by simplejson, instead it is better to pass a function to the
+:py:meth:`json.JSONencoder`'s default parameter. This is easily achieved by
+using a :py:func:`functools.partial`.
+
+.. warning::
+
+    It is critical that you do not pass a value for indent, as the
+    :py:class:`.Stream` class sets this value internally.
+
+
+.. code-block:: python
+
+    from functools import partial
+    from json import JSONEncoder
+
+    def my_encoder(self, obj):
+        # Turn sets into lists so they can be encoded
+        if isinstance(obj, set):
+            return list(obj)
+        return obj
+
+    with jsonstreams.Stream('object', filename='foo',
+                            encoder=partial(JSONEncoder, default=my_encoder)):
+        s.write('foo', {'foo', 'bar'})
