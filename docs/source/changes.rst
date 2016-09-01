@@ -75,8 +75,8 @@ Bug Fixes:
 
 New features:
 
-- Added a pretty printer flag. This allows priting complex object with the
-  expected level of indent, but with added overhread. 
+- Added a pretty printer flag. This allows printing complex object with the
+  expected level of indent, but with added overhead. 
   (`#3 <https://github.com/dcbaker/jsonstreams/issues/3>`_)
 
 Bug Fixes:

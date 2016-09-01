@@ -51,7 +51,7 @@ Customizing the encoder
 The encoder can be customized to allow complex types to be passed in without
 having to convert them into types that json.JSONEncoder can natively
 understand. It can be done by subclassing the JSONEncoder, but this isn't
-recomended by simplejson, instead it is better to pass a function to the
+recommended by simplejson, instead it is better to pass a function to the
 :py:meth:`json.JSONencoder`'s default parameter. This is easily achieved by
 using a :py:func:`functools.partial`.
 
