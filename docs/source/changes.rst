@@ -1,6 +1,15 @@
 Changes
 =======
 
+next
+-----
+
+New Features
+
+- Bump from alpha to beta quailty. The public API will no longer change in a
+  non-backwards compatible way without a very good reason.
+
+
 0.4.0
 -----
 
