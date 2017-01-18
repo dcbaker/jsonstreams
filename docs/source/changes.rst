@@ -8,6 +8,7 @@ New Features
 
 - Bump from alpha to beta quailty. The public API will no longer change in a
   non-backwards compatible way without a very good reason.
+- Add support for Python 3.6
 
 
 0.4.0
