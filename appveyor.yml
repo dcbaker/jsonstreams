@@ -25,15 +25,6 @@ environment:
         - PYTHON: C:\Python36
           TOXENV: "py36"
 
-        - PYTHON: C:\Python35
-          TOXENV: "pylint"
-
-        - PYTHON: C:\Python35
-          TOXENV: "style"
-
-        - PYTHON: C:\Python35
-          TOXENV: "mypy"
-
 init:
     - ps: echo $env:TOXENV
     - ps: ls C:\Python*
