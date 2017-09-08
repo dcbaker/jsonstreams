@@ -46,8 +46,10 @@ Basic Usage
 A simple example looks like this
 
 .. code-block:: python
+
+    import jsonstreams
     
-    with jsonstreams.Stream('foo', jsonstreams.Type.object) as s:
+    with jsonstreams.Stream(jsonstreams.Type.object, filename='foo') as s:
         s.write('foo', 'bar')
         with s.subobject('a') as a:
             a.write(1, 'foo')
@@ -64,9 +66,11 @@ is unnecessary:
 
 .. code-block:: python
 
+    import jsonstreams
+
     mylist = list(range(10))
     mydict = {a: b for a in range(10) for b in 'abcdefghij'}
 
-    with jsonstreams.Stream('foo', jsonstreams.Type.object) as s:
+    with jsonstreams.Stream(jsonstreams.Type.object, filename='foo') as s:
         s.write('list', mylist)
         s.write('dict', mydict)
