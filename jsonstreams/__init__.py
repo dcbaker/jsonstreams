@@ -1,5 +1,5 @@
 # encoding=utf-8
-# Copyright © 2016 Dylan Baker
+# Copyright © 2016-2017 Dylan Baker
 
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -272,7 +272,7 @@ class ArrayWriter(BaseWriter):
 
 
 def _raise(exc, *args, **kwargs):  # pylint: disable=unused-argument
-    """Helper to raise an exception."""
+    """Raise an exception."""
     raise exc
 
 
@@ -336,7 +336,7 @@ class Object(object):
         self._writer.baseindent += 1
 
     def _sub(self, jtype, key):
-        """A shared method for subarray and subobject."""
+        """Shared method for subarray and subobject."""
         # Write in the comma if it's needed, then write in the key
         if self._writer.comma:
             self._writer.write_comma_literal()
@@ -423,7 +423,7 @@ class Array(object):
         self._writer.baseindent += 1
 
     def _sub(self, jtype):
-        """A shared method for subarray and subobject."""
+        """Shared method for subarray and subobject."""
         # Write in the comma if it's needed, then write in the key
         if self._writer.comma:
             self._writer.write_comma_literal()
