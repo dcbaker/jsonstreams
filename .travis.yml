@@ -12,13 +12,13 @@ matrix:
       env: TOX_ENV="py35"
     - python: 3.6
       env: TOX_ENV="py36"
-    - python: 3.5
+    - python: 3.6
       env: TOX_ENV="pylint"
-    - python: 3.5
+    - python: 3.6
       env: TOX_ENV="style"
-    - python: 3.5
+    - python: 3.6
       env: TOX_ENV="mypy"
-    - python: 3.5
+    - python: 3.6
       env: TOX_ENV="docs"
 install:
   - pip install tox
