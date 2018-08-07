@@ -166,8 +166,7 @@ class BaseWriter(object):
         """Baseish class."""
 
     def set_comma(self):
-        # replace with the comma version, removeing the need for extra if
-        # statements.
+        """Set the write method to add a comma."""
         self.comma = True
         if not self.pretty:
             self.write = self._write_comma
