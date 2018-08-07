@@ -100,7 +100,7 @@ class StreamClosedError(JSONStreamsError):
 
 
 class ModifyWrongStreamError(JSONStreamsError):
-    """This exception is raised when writing to a parent when a child is opened.
+    """Exception raised when writing to a parent when a child is opened.
 
     Because of the streaming nature of this module, one cannot write into a
     parent without first closing the child, since there is no way to put the
