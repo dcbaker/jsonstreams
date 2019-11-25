@@ -25,8 +25,6 @@ import json
 import textwrap
 
 import pytest # type: ignore
-import six
-from six.moves import range
 
 import jsonstreams
 
@@ -797,7 +795,7 @@ class TestObject(object):
         def test_basic(self):
             with open('foo', 'w') as f:
                 with jsonstreams.Object(f, 0, 0, _ENCODER) as a:
-                    a.iterwrite(six.iteritems({'a': 1, '2': 2, 'foo': None}))
+                    a.iterwrite({'a': 1, '2': 2, 'foo': None}.items())
 
             with open('foo', 'r') as f:
                 actual = json.load(f)
@@ -807,7 +805,7 @@ class TestObject(object):
         def test_mixed(self):
             with open('foo', 'w') as f:
                 with jsonstreams.Object(f, 0, 0, _ENCODER) as a:
-                    a.iterwrite(six.iteritems({'a': 1, '2': 2, 'foo': None}))
+                    a.iterwrite({'a': 1, '2': 2, 'foo': None}.items())
                     a.write('bar', 3)
 
             with open('foo', 'r') as f:

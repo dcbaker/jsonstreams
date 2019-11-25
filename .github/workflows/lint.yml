@@ -21,8 +21,7 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          # Six is needed for jsonstreams, as nothing else depends on it anymore
-          pip install wheel pylint mypy pycodestyle pydocstyle six
+          pip install wheel pylint mypy pycodestyle pydocstyle
       - name: Lint with pylint
         run: |
           pylint jsonstreams --rcfile=pylintrc --reports=n

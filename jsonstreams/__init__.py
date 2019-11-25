@@ -76,8 +76,6 @@ try:
 except ImportError:
     import json  # type: ignore
 
-import six
-
 __all__ = (
     'InvalidTypeError',
     'ModifyWrongStreamError',
@@ -196,7 +194,7 @@ class ObjectWriter(BaseWriter):
         This will enforce that a key must be a string type, since that's a
         requirement of JSON.
         """
-        if not isinstance(key, (six.text_type, six.binary_type)):
+        if not isinstance(key, (str, bytes):
             raise InvalidTypeError('Only string or bytes types can be used as '
                                    'keys in JSON objects')
         self.write_all(self.encoder.iterencode(key), indent=self.indent)
@@ -329,11 +327,11 @@ class _CacheChild(object):
 
         func = functools.partial(_raise, ModifyWrongStreamError(
             'Cannot modify a stream while a child stream is opened'))
-        for k in six.iterkeys(kwargs):
+        for k in kwargs.keys():
             setattr(inst, k, func)
 
     def restore(self):
-        for k, v in six.iteritems(self.cached):
+        for k, v in self.cached.items():
             setattr(self.inst, k, v)
 
 
