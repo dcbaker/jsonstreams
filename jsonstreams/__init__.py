@@ -68,16 +68,13 @@ returning a (key, value) tuple pair.
 ...         a.iterwrite(range(5))
 """
 
+import enum
 import functools
 import warnings
 try:
     import simplejson as json  # type: ignore
 except ImportError:
     import json  # type: ignore
-try:
-    import enum
-except ImportError:
-    import enum34 as enum  # type: ignore
 
 import six
 

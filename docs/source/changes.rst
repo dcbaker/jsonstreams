@@ -5,6 +5,7 @@ next
 -----
 
 - Drop support for python 2.x
+- Drop enum34 requirement
 
 0.6.0
 ------

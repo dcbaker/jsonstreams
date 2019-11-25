@@ -22,10 +22,7 @@
 """Stub file for __init__.py."""
 
 from typing import *
-try:
-    import enum
-except ImportError:
-    import enum34 as enum  # type: ignore
+import enum
 
 JSONObject = Dict[Text, Any]
 JSONArray = List[Any]
