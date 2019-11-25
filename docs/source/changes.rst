@@ -1,6 +1,15 @@
 Changes
 =======
 
+0.4.2
+------
+
+New Features
+
+- Add support for Python 3.7 and 3.8
+- Drop support for python 3.4
+
+
 0.4.1
 -----
 
