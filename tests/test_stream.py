@@ -33,7 +33,7 @@ _ENCODER = json.JSONEncoder()  # type: ignore
 # pylint: disable=no-self-use
 
 
-class TestStream(object):
+class TestStream:
 
     @pytest.fixture(autouse=True)
     def chdir(self, tmpdir):
@@ -189,10 +189,10 @@ class TestStream(object):
                 }
             ]""")
 
-    class TestIterWrite(object):
+    class TestIterWrite:
         """Tests for the iterwrite object."""
 
-        class TestArray(object):
+        class TestArray:
             """Tests for array object."""
 
             @pytest.fixture(autouse=True)
@@ -220,7 +220,7 @@ class TestStream(object):
 
                 assert actual == list(range(5)) + ['a']
 
-        class TestObject(object):
+        class TestObject:
             """Tests for array object."""
 
             @pytest.fixture(autouse=True)
@@ -254,7 +254,7 @@ class TestStream(object):
                 assert actual == expected
 
 
-class TestObject(object):
+class TestObject:
 
     def test_init(self):
         with open('foo', 'w') as f:
@@ -285,13 +285,13 @@ class TestObject(object):
         with open('foo', 'r') as f:
             assert f.read() == '{"foo":"bar"}'
 
-    class TestWrite(object):
+    class TestWrite:
 
         @pytest.fixture(autouse=True)
         def chdir(self, tmpdir):
             tmpdir.chdir()
 
-        class TestWithoutIndent(object):
+        class TestWithoutIndent:
 
             @pytest.fixture(autouse=True)
             def chdir(self, tmpdir):
@@ -322,7 +322,7 @@ class TestObject(object):
                 with open('foo', 'r') as f:
                     assert f.read() == '{"foo": {"1": "bar"}}'
 
-        class TestWithIndent(object):
+        class TestWithIndent:
 
             @pytest.fixture(autouse=True)
             def chdir(self, tmpdir):
@@ -411,7 +411,7 @@ class TestObject(object):
                     }
                 }""")
 
-    class TestSubobject(object):
+    class TestSubobject:
         """Tests for the suboboject method."""
 
         @pytest.fixture(autouse=True)
@@ -468,7 +468,7 @@ class TestObject(object):
                         }
                     }""")
 
-        class TestNestedContextManager(object):
+        class TestNestedContextManager:
             """Test various nested configurations with context managers."""
 
             def test_inner(self):
@@ -513,7 +513,7 @@ class TestObject(object):
                     assert f.read() == \
                         '{"1": "bar", "ook": {"1": "bar"}, "foo": "bar"}'
 
-        class TestNested(object):
+        class TestNested:
             """Test various nested configurations."""
 
             def test_inner(self):
@@ -565,7 +565,7 @@ class TestObject(object):
                     assert f.read() == \
                         '{"1": "foo", "2": {"1": "bar"}, "3": "foo"}'
 
-    class TestSubarray(object):
+    class TestSubarray:
         """Tests for the subarray method."""
 
         @pytest.fixture(autouse=True)
@@ -622,7 +622,7 @@ class TestObject(object):
                         ]
                     }""")
 
-        class TestNestedContextManager(object):
+        class TestNestedContextManager:
             """Test various nested configurations with context managers."""
 
             def test_inner(self):
@@ -667,7 +667,7 @@ class TestObject(object):
                     assert f.read() == \
                         '{"1": "bar", "ook": [1], "foo": "bar"}'
 
-        class TestNested(object):
+        class TestNested:
             """Test various nested configurations."""
 
             def test_inner(self):
@@ -718,7 +718,7 @@ class TestObject(object):
                 with open('foo', 'r') as f:
                     assert f.read() == '{"1": "foo", "2": [1], "3": "foo"}'
 
-    class TestClose(object):
+    class TestClose:
 
         @pytest.fixture(autouse=True)
         def chdir(self, tmpdir):
@@ -764,7 +764,7 @@ class TestObject(object):
                 with pytest.raises(jsonstreams.StreamClosedError):
                     test.subobject('foo')
 
-    class TestWriteToParent(object):
+    class TestWriteToParent:
         """Tests for writing to the parent with a subobject open."""
 
         @pytest.fixture(autouse=True)
@@ -785,7 +785,7 @@ class TestObject(object):
                         with pytest.raises(jsonstreams.ModifyWrongStreamError):
                             a.write('foo', 'bar')
 
-    class TestIterWrite(object):
+    class TestIterWrite:
         """Tests for the iterwrite object."""
 
         @pytest.fixture(autouse=True)
@@ -872,7 +872,7 @@ class TestObject(object):
             assert actual == expected
 
 
-class TestArray(object):
+class TestArray:
 
     @pytest.fixture(autouse=True)
     def chdir(self, tmpdir):
@@ -908,13 +908,13 @@ class TestArray(object):
         with open('foo', 'r') as f:
             assert f.read() == '[]'
 
-    class TestWrite(object):
+    class TestWrite:
 
         @pytest.fixture(autouse=True)
         def chdir(self, tmpdir):
             tmpdir.chdir()
 
-        class TestWithoutIndent(object):
+        class TestWithoutIndent:
 
             @pytest.fixture(autouse=True)
             def chdir(self, tmpdir):
@@ -945,7 +945,7 @@ class TestArray(object):
                 with open('foo', 'r') as f:
                     assert f.read() == '[{"1": "bar"}]'
 
-        class TestWithIndent(object):
+        class TestWithIndent:
 
             @pytest.fixture(autouse=True)
             def chdir(self, tmpdir):
@@ -1026,7 +1026,7 @@ class TestArray(object):
                     }
                 ]""")
 
-    class TestSubobject(object):
+    class TestSubobject:
 
         @pytest.fixture(autouse=True)
         def chdir(self, tmpdir):
@@ -1082,7 +1082,7 @@ class TestArray(object):
                         }
                     ]""")
 
-        class TestNestedContextManager(object):
+        class TestNestedContextManager:
             """Test various nested configurations with context managers."""
 
             def test_inner(self):
@@ -1126,7 +1126,7 @@ class TestArray(object):
                 with open('foo', 'r') as f:
                     assert f.read() == '[1, {"1": "bar"}, 2]'
 
-        class TestNested(object):
+        class TestNested:
             """Test various nested configurations."""
 
             def test_inner(self):
@@ -1178,7 +1178,7 @@ class TestArray(object):
                 with open('foo', 'r') as f:
                     assert f.read() == '[1, {"1": "bar"}, 2]'
 
-    class TestSubarray(object):
+    class TestSubarray:
 
         @pytest.fixture(autouse=True)
         def chdir(self, tmpdir):
@@ -1234,7 +1234,7 @@ class TestArray(object):
                         ]
                     ]""")
 
-        class TestNestedContextManager(object):
+        class TestNestedContextManager:
             """Test various nested configurations with context managers."""
 
             def test_inner(self):
@@ -1278,7 +1278,7 @@ class TestArray(object):
                 with open('foo', 'r') as f:
                     assert f.read() == '[1, ["bar"], 2]'
 
-        class TestNested(object):
+        class TestNested:
             """Test various nested configurations."""
 
             def test_inner(self):
@@ -1330,7 +1330,7 @@ class TestArray(object):
                 with open('foo', 'r') as f:
                     assert f.read() == '[1, [1], 2]'
 
-    class TestClose(object):
+    class TestClose:
 
         @pytest.fixture(autouse=True)
         def chdir(self, tmpdir):
@@ -1376,7 +1376,7 @@ class TestArray(object):
                 with pytest.raises(jsonstreams.StreamClosedError):
                     test.subobject()
 
-    class TestWriteToParent(object):
+    class TestWriteToParent:
         """Tests for writing to the parent with a subobject open."""
 
         @pytest.fixture(autouse=True)
@@ -1397,7 +1397,7 @@ class TestArray(object):
                         with pytest.raises(jsonstreams.ModifyWrongStreamError):
                             a.write('foo')
 
-    class TestIterWrite(object):
+    class TestIterWrite:
         """Tests for the iterwrite object."""
 
         @pytest.fixture(autouse=True)
@@ -1517,7 +1517,7 @@ class StreamsAreStringsJSONEncoder(json.encoder.JSONEncoder):
         return super(StreamsAreStringsJSONEncoder, self).iterencode(value, **args)
 
 
-class TestStringStream(object):
+class TestStringStream:
 
     @pytest.fixture(autouse=True)
     def chdir(self, tmpdir):
