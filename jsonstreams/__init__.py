@@ -529,6 +529,7 @@ class Stream(object):
                 instances returned by the subarray and subobject methods of
                 this instance and it's children.
                 Default: json.JSONEncoder
+
     """
 
     _types = {
