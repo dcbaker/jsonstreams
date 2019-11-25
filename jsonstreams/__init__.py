@@ -100,7 +100,7 @@ class StreamClosedError(JSONStreamsError):
 
 
 class ModifyWrongStreamError(JSONStreamsError):
-    """This exception is raised when writing to a parent when a child is opened.
+    """Exception raised when writing to a parent when a child is opened.
 
     Because of the streaming nature of this module, one cannot write into a
     parent without first closing the child, since there is no way to put the
@@ -166,8 +166,7 @@ class BaseWriter(object):
         """Baseish class."""
 
     def set_comma(self):
-        # replace with the comma version, removeing the need for extra if
-        # statements.
+        """Set the write method to add a comma."""
         self.comma = True
         if not self.pretty:
             self.write = self._write_comma
@@ -530,6 +529,7 @@ class Stream(object):
                 instances returned by the subarray and subobject methods of
                 this instance and it's children.
                 Default: json.JSONEncoder
+
     """
 
     _types = {
