@@ -7,6 +7,7 @@ next
 New Features
 
 - Add support for Python 3.9
+- Drop support for python 3.4
 
 0.4.2
 ------
