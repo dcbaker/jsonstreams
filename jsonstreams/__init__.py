@@ -539,7 +539,7 @@ class Stream(object):
 
     def __init__(self, jtype, filename=None, fd=None, indent=0, pretty=False,
                  encoder=json.JSONEncoder):
-        """Constructor."""
+        """Initialize the Stream."""
         assert filename or fd
 
         self.__fd = fd or open(filename, 'w')
