@@ -1,6 +1,13 @@
 Changes
 =======
 
+next
+------
+
+New Features
+
+- Add support for Python 3.9
+
 0.4.2
 ------
 
@@ -76,7 +83,7 @@ New features:
 Bug Fixes:
 
 - Pass the pretty flag down in the Stream class correctly. This bug was more of
-  an annoyance than anything else. 
+  an annoyance than anything else.
   (`#7 <https://github.com/dcbaker/jsonstreams/issues/7>`_)
 
 
@@ -86,7 +93,7 @@ Bug Fixes:
 New features:
 
 - Added a pretty printer flag. This allows printing complex object with the
-  expected level of indent, but with added overhead. 
+  expected level of indent, but with added overhead.
   (`#3 <https://github.com/dcbaker/jsonstreams/issues/3>`_)
 
 Bug Fixes:
