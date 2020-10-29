@@ -68,6 +68,7 @@ returning a (key, value) tuple pair.
 """
 
 import functools
+import warnings
 try:
     import simplejson as json  # type: ignore
 except ImportError:
@@ -539,11 +540,26 @@ class Stream(object):
     }
 
     def __init__(self, jtype, filename=None, fd=None, indent=None,
-                 pretty=False, encoder=json.JSONEncoder):
+                 pretty=False, encoder=json.JSONEncoder, close_fd=None):
         """Initialize the Stream."""
-        assert filename or fd
-
+        if not (fd or filename):
+            raise RuntimeError('Must pass exactly one of "filename" or "fd" (got neither)')
+        if fd and filename:
+            raise RuntimeError('Must pass exactly one of "filename" or "fd" (got both)')
         self.__fd = fd or open(filename, 'w')
+
+        # If we didn't open the file, we need to check if we own the fd, or not.
+        if filename:
+            self.__close_fd = True
+        elif close_fd is None:
+            warnings.warn("The current default behavior is False, but in "
+                          "jsonstreams 1.0 the default behavior of "
+                          "close_fd will change to False",
+                          DeprecationWarning)
+            self.__close_fd = True
+        else:
+            self.__close_fd = close_fd
+
         self.__inst = self._types[jtype](
             self.__fd, indent, 0, encoder(indent=indent), pretty=pretty)
 
@@ -566,7 +582,8 @@ class Stream(object):
     def close(self):
         """Close the root element and the file."""
         self.__inst.close()
-        self.__fd.close()
+        if self.__close_fd:
+            self.__fd.close()
 
     def __enter__(self):
         """Start context manager."""

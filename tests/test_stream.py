@@ -48,9 +48,30 @@ class TestStream(object):
         with open('foo', 'r') as f:
             assert f.read() == '{"foo": "bar"}'
 
-    def test_fd(self):
+    def test_fd_default_close(self):
+        # Default will change in 1.0 to True
         with open('foo', 'w') as f:
             with jsonstreams.Stream(jsonstreams.Type.object, fd=f) as s:
+                s.write('foo', 'bar')
+            assert f.closed
+
+    def test_fd_closed_explicit(self):
+        # Default will change in 1.0 to True
+        with open('foo', 'w') as f:
+            with jsonstreams.Stream(jsonstreams.Type.object, fd=f, close_fd=True) as s:
+                s.write('foo', 'bar')
+            assert f.closed
+
+    def test_fd_not_closed_explicit(self):
+        # Default will change in 1.0 to True
+        with open('foo', 'w') as f:
+            with jsonstreams.Stream(jsonstreams.Type.object, fd=f, close_fd=False) as s:
+                s.write('foo', 'bar')
+            assert not f.closed
+
+    def test_fd(self):
+        with open('foo', 'w') as f:
+            with jsonstreams.Stream(jsonstreams.Type.object, fd=f, close_fd=False) as s:
                 s.write('foo', 'bar')
 
         with open('foo', 'r') as f:

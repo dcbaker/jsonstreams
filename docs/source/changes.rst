@@ -1,13 +1,15 @@
 Changes
 =======
 
-0.4.4
+next
 ------
 
 Bug Fixes:
 
 - Fix a bug that prevents the Stream class from producing proper compact JSON output
   (`#21 <https://github.com/dcbaker/jsonstreams/issues/21>`_)
+- Add api to control closing the file-like object on Stream close
+  (`#23 <https://github.com/dcbaker/jsonstreams/issues/23>`_)
 
 0.4.3
 ------

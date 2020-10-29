@@ -37,7 +37,7 @@ Exceptions
     :param str message: the message to be displayed with the exception is raised
 
     .. code-block:: python
-        
+
         with jsonstreams.Stream(Type.object, filename='foo') as s:
             with s.subobject('bar') as b:
                 s.write('foo', 'bar')
@@ -62,7 +62,7 @@ Exceptions
     :type message: str (python 3) or unicode (python 2)
 
     .. code-block:: python
-        
+
         with jsonstreams.Stream(Type.object, filename='foo') as s:
             with s.subobject(1) as b:
         InvalidTypeError
@@ -77,7 +77,7 @@ Exceptions
     :type message: str (python 3) or unicode (python 2)
 
     .. code-block:: python
-        
+
         with jsonstreams.Stream(Type.object, filename='foo') as s:
             with s.subobject(1) as b:
                 b.write('foo', 'bar)
@@ -94,7 +94,7 @@ Classes
     This is an enum that provides valid types for the Stream class.
 
     .. py:attribute:: object
-    
+
         A JSON object
 
     .. py:attribute:: array
@@ -111,7 +111,8 @@ Classes
 
     It can be initialized with either a filename, which it will open via
     :py:func:`open`, or a file-like object already opened for write, but not
-    both.
+    both. If it is passed a file-like object it will no longer close that
+    object, it is the caller's job to do so.
 
     It also takes and indent argument, which will cause the writer to add the
     appropriate white space to the output. For especially large documents this
@@ -132,6 +133,16 @@ Classes
         with jsonwriter.Stream(jsonstreams.Type.array, filename='foo') as s:
             s.write('foo')
 
+    .. note::
+
+        If the stream opens the file-like object itself by filename it will
+        always close the file when the Stream is closed.
+
+    .. warning::
+
+        The behavior of close_fd will change in the future. Currently it
+        defaults to True, but in JsonStreams 1.0 it will default to False.
+
     :arg Type jtype: A value of the :py:class:`.Type` enum.
     :keyword filename: If set this will be opened and the stream written into it.
     :type filename: str or None
@@ -140,6 +151,7 @@ Classes
     :keyword bool pretty: Whether or not to indent complex objects.
     :keyword encoder: A callable that will create a json.JSONEncoder instance.
     :type encoder: json.JSONEncoder
+    :keyword bool close_fd: Close the fd when the Stream closes. Ignored if passed a filename
 
     .. py:method:: write
 
