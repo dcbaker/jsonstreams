@@ -144,7 +144,7 @@ class BaseWriter(object):
             self.write_comma_literal = functools.partial(self.raw_write, ', ')
 
     def _indent(self):
-        if self.indent and isinstance(self.indent, int) and self.indent >= 0:
+        if self.indent:
             return ' ' * self.baseindent * self.indent
         else:
             return ''
