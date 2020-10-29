@@ -1,6 +1,14 @@
 Changes
 =======
 
+0.4.4
+------
+
+Bug Fixes:
+
+- Fix a bug that prevents the Stream class from producing proper compact JSON output
+  (`#21 <https://github.com/dcbaker/jsonstreams/issues/21>`_)
+
 0.4.3
 ------
 

@@ -144,7 +144,10 @@ class BaseWriter(object):
             self.write_comma_literal = functools.partial(self.raw_write, ', ')
 
     def _indent(self):
-        return ' ' * self.baseindent * self.indent
+        if self.indent:
+            return ' ' * self.baseindent * self.indent
+        else:
+            return ''
 
     def raw_write(self, value, indent=False, newline=False):
         if indent:
@@ -537,7 +540,7 @@ class Stream(object):
         Type.array: Array,
     }
 
-    def __init__(self, jtype, filename=None, fd=None, indent=0, pretty=False,
+    def __init__(self, jtype, filename=None, fd=None, indent=None, pretty=False,
                  encoder=json.JSONEncoder):
         """Initialize the Stream."""
         assert filename or fd
