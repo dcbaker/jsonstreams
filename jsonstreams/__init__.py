@@ -582,6 +582,7 @@ class Stream(object):
     def close(self):
         """Close the root element and the file."""
         self.__inst.close()
+        self.__fd.flush()
         if self.__close_fd:
             self.__fd.close()
 

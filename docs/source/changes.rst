@@ -10,6 +10,8 @@ Bug Fixes:
   (`#21 <https://github.com/dcbaker/jsonstreams/issues/21>`_)
 - Add api to control closing the file-like object on Stream close
   (`#23 <https://github.com/dcbaker/jsonstreams/issues/23>`_)
+- flush the fd before closing the Stream
+  (`#24 <https://github.com/dcbaker/jsonstreams/issues/24>`_)
 
 0.4.3
 ------
