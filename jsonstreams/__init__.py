@@ -539,8 +539,8 @@ class Stream(object):
         Type.array: Array,
     }
 
-    def __init__(self, jtype, filename=None, fd=None, indent=None, pretty=False,
-                 encoder=json.JSONEncoder):
+    def __init__(self, jtype, filename=None, fd=None, indent=None,
+                 pretty=False, encoder=json.JSONEncoder):
         """Initialize the Stream."""
         assert filename or fd
 
