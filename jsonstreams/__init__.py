@@ -146,8 +146,7 @@ class BaseWriter(object):
     def _indent(self):
         if self.indent:
             return ' ' * self.baseindent * self.indent
-        else:
-            return ''
+        return ''
 
     def raw_write(self, value, indent=False, newline=False):
         if indent:
@@ -540,8 +539,8 @@ class Stream(object):
         Type.array: Array,
     }
 
-    def __init__(self, jtype, filename=None, fd=None, indent=None, pretty=False,
-                 encoder=json.JSONEncoder):
+    def __init__(self, jtype, filename=None, fd=None, indent=None,
+                 pretty=False, encoder=json.JSONEncoder):
         """Initialize the Stream."""
         assert filename or fd
 

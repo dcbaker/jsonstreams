@@ -1,9 +1,14 @@
 JSONStreams
 ===========
 
-.. image:: https://travis-ci.org/dcbaker/jsonstreams.svg?branch=master
-    :target: https://travis-ci.org/dcbaker/jsonstreams
-    :alt: Travis CI Status
+.. image:: https://github.com/dcbaker/jsonstreams/workflows/lint/badge.svg
+    :alt: Python Linting status
+
+.. image:: https://github.com/dcbaker/jsonstreams/workflows/Unit%20tests/badge.svg
+    :alt: Linux test status
+
+.. image:: https://badge.fury.io/py/jsonstreams.svg
+    :target: https://badge.fury.io/py/jsonstreams
 
 .. image:: https://ci.appveyor.com/api/projects/status/ocrt9nol8kn3pm1t/branch/master?svg=true
     :target: https://ci.appveyor.com/project/dcbaker/jsonstreams
@@ -48,7 +53,7 @@ A simple example looks like this
 .. code-block:: python
 
     import jsonstreams
-    
+
     with jsonstreams.Stream(jsonstreams.Type.object, filename='foo') as s:
         s.write('foo', 'bar')
         with s.subobject('a') as a:
