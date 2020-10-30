@@ -7,6 +7,9 @@ JSONStreams
 .. image:: https://github.com/dcbaker/jsonstreams/workflows/Unit%20tests/badge.svg
     :alt: Linux test status
 
+.. image:: https://badge.fury.io/py/jsonstreams.svg
+    :target: https://badge.fury.io/py/jsonstreams
+
 .. image:: https://ci.appveyor.com/api/projects/status/ocrt9nol8kn3pm1t/branch/master?svg=true
     :target: https://ci.appveyor.com/project/dcbaker/jsonstreams
     :alt: Appveyor CI Status
