@@ -36,7 +36,7 @@ class Encoder(Generic):
 
 def _raise(exc: Exception, *args: Any, **kwargs: Any) -> None: ...
 
-class BaseWriter(object):
+class BaseWriter:
     def __init__(self, fd: IO[Text], indent: int, baseindent: int,
                  encoder: Encoder, pretty: bool) -> None:
         self.fd = fd                  # type: IO[Text]
@@ -55,20 +55,20 @@ class ObjectWriter(BaseWriter):
 class ArrayWriter(BaseWriter):
     def write(self, key: Text) -> None: ...
 
-class Open(object):
+class Open:
     def __init__(self, intializer: Callable[[None], None],
                  callback: Callable[[None], None]) -> None: ...
     def write(self, key: Text, value: Optional[Text]) -> None: ...
     def close(self) -> None: ...
     def __enter__(self) -> Open: ...
 
-class _CacheChild(object):
+class _CacheChild:
     def __init__(self, inst: object, **kwargs: Dict[Text, Any]) -> None:
         self.cached = kwargs  # type: Dict[Text, Any]
         self.inst = inst      # type: object
     def restore(self) -> None: ...
 
-class Object(object):
+class Object:
     def __init__(self, fd: IO[Text], indent: int, baseindnet: int,
                  encoder: Encoder, _indent: bool) -> None: ...
     def subobject(self, key: Text) -> Object: ...
@@ -77,7 +77,7 @@ class Object(object):
     def close(self) -> None: ...
     def __enter__(self) -> Object: ...
 
-class Array(object):
+class Array:
     def __init__(self, fd: IO[Text], indent: int, baseindnet: int,
                  encoder: Encoder, _indent: bool) -> None: ...
     def subobject(self) -> Object: ...
@@ -86,7 +86,7 @@ class Array(object):
     def close(self) -> None: ...
     def __enter__(self) -> Array: ...
 
-class Stream(object):
+class Stream:
     def __init__(self, jtype: Type, filename: Optional[Text],
                  fd: Optional[IO[Text]], indent: Optional[int],
                  pretty: Optional[bool], encoder: Encoder,

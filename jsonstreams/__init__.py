@@ -67,18 +67,13 @@ returning a (key, value) tuple pair.
 ...         a.iterwrite(range(5))
 """
 
+import enum
 import functools
 import warnings
 try:
     import simplejson as json  # type: ignore
 except ImportError:
     import json  # type: ignore
-try:
-    import enum
-except ImportError:
-    import enum34 as enum  # type: ignore
-
-import six
 
 __all__ = (
     'InvalidTypeError',
@@ -118,7 +113,7 @@ class InvalidTypeError(JSONStreamsError):
     """
 
 
-class BaseWriter(object):
+class BaseWriter:
     """Private class for writing things."""
 
     __slots__ = ('fd', 'indent', 'baseindent', 'encoder', 'pretty', 'comma',
@@ -188,7 +183,7 @@ class ObjectWriter(BaseWriter):
         This will enforce that a key must be a string type, since that's a
         requirement of JSON.
         """
-        if not isinstance(key, (six.text_type, six.binary_type)):
+        if not isinstance(key, (str, bytes)):
             raise InvalidTypeError('Only string or bytes types can be used as '
                                    'keys in JSON objects')
         self.raw_write(self.encoder.encode(key), indent=self.indent)
@@ -277,7 +272,7 @@ def _raise(exc, *args, **kwargs):  # pylint: disable=unused-argument
     raise exc
 
 
-class Open(object):
+class Open:
     """A helper to allow subelements to be used as context managers."""
 
     __slots__ = ('__inst', '__callback', 'subarray', 'subobject')
@@ -303,7 +298,7 @@ class Open(object):
         self.close()
 
 
-class _CacheChild(object):
+class _CacheChild:
     """Object that hides public methods while a child is opened.
 
     It does this by shadowing them with a function that raises an exception
@@ -319,15 +314,15 @@ class _CacheChild(object):
 
         func = functools.partial(_raise, ModifyWrongStreamError(
             'Cannot modify a stream while a child stream is opened'))
-        for k in six.iterkeys(kwargs):
+        for k in kwargs:
             setattr(inst, k, func)
 
     def restore(self):
-        for k, v in six.iteritems(self.cached):
+        for k, v in self.cached.items():
             setattr(self.inst, k, v)
 
 
-class Object(object):
+class Object:
     """A streaming array representation."""
 
     def __init__(self, fd, indent, baseindent, encoder, _indent=False,
@@ -414,7 +409,7 @@ class Object(object):
         self.close()
 
 
-class Array(object):
+class Array:
     """A streaming array representation."""
 
     def __init__(self, fd, indent, baseindent, encoder, _indent=False,
@@ -507,7 +502,7 @@ class Type(enum.Enum):
     array = 2
 
 
-class Stream(object):
+class Stream:
     """A JSON stream object.
 
     This object is the "root" object for the stream. It handles opening and

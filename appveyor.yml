@@ -8,19 +8,18 @@ skip_tags: true
 shallow_clone: true
 clone_depth: 100
 
+only_commits:
+  files:
+    - '**/*py'
+
 environment:
     matrix:
-        - PYTHON: C:\Python27
-          TOXENV: "py27"
 
         - PYTHON: C:\Python36
           TOXENV: "py36"
 
         - PYTHON: C:\Python37
           TOXENV: "py37"
-
-        - PYTHON: C:\Python38
-          TOXENV: "py38"
 
         - PYTHON: C:\Python38
           TOXENV: "py38"
