@@ -146,8 +146,7 @@ class BaseWriter(object):
     def _indent(self):
         if self.indent:
             return ' ' * self.baseindent * self.indent
-        else:
-            return ''
+        return ''
 
     def raw_write(self, value, indent=False, newline=False):
         if indent:
