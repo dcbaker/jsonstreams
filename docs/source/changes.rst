@@ -4,6 +4,8 @@ Changes
 next
 -----
 
+- Drop support for python 2.x
+
 0.6.0
 ------
 
