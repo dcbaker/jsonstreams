@@ -543,12 +543,15 @@ class Stream(object):
                  pretty=False, encoder=json.JSONEncoder, close_fd=None):
         """Initialize the Stream."""
         if not (fd or filename):
-            raise RuntimeError('Must pass exactly one of "filename" or "fd" (got neither)')
+            raise RuntimeError(
+                'Must pass exactly one of "filename" or "fd" (got neither)')
         if fd and filename:
-            raise RuntimeError('Must pass exactly one of "filename" or "fd" (got both)')
+            raise RuntimeError(
+                'Must pass exactly one of "filename" or "fd" (got both)')
         self.__fd = fd or open(filename, 'w')
 
-        # If we didn't open the file, we need to check if we own the fd, or not.
+        # If we didn't open the file, we need to check if we own the fd, or
+        # not.
         if filename:
             self.__close_fd = True
         elif close_fd is None:
