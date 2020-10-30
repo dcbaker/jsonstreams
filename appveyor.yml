@@ -8,6 +8,10 @@ skip_tags: true
 shallow_clone: true
 clone_depth: 100
 
+only_commits:
+  files:
+    - '**/*py'
+
 environment:
     matrix:
 

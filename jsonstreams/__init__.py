@@ -327,7 +327,7 @@ class _CacheChild:
 
         func = functools.partial(_raise, ModifyWrongStreamError(
             'Cannot modify a stream while a child stream is opened'))
-        for k in kwargs.keys():
+        for k in kwargs:
             setattr(inst, k, func)
 
     def restore(self):
