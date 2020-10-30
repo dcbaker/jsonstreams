@@ -1,0 +1,37 @@
+name: lint
+
+on:
+  push:
+    paths:
+    - '**.py'
+  pull_request:
+    paths:
+    - '**.py'
+
+jobs:
+  pylint:
+    name: "Linting and style checking"
+    runs-on: "ubuntu-latest"
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up Python 3.8
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.8
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install wheel pylint mypy pycodestyle pydocstyle
+      - name: Lint with pylint
+        run: |
+          pylint jsonstreams --rcfile=pylintrc --reports=n
+      - name: Lint with mypy
+        run: |
+          mypy -p jsonstreams
+          mypy -p tests
+      - name: Lint with pycodestyle
+        run: |
+          pycodestyle jsonstreams
+      - name: Lint with pydocstyle
+        run: |
+          pydocstyle jsonstreams

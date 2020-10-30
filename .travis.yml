@@ -14,12 +14,6 @@ matrix:
     - python: "3.9-dev"
       env: TOX_ENV="py39"
     - python: 3.8
-      env: TOX_ENV="pylint"
-    - python: 3.8
-      env: TOX_ENV="style"
-    - python: 3.8
-      env: TOX_ENV="mypy"
-    - python: 3.8
       env: TOX_ENV="docs"
 install:
   - pip install tox
