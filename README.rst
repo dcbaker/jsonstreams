@@ -57,8 +57,8 @@ A simple example looks like this
     with jsonstreams.Stream(jsonstreams.Type.object, filename='foo') as s:
         s.write('foo', 'bar')
         with s.subobject('a') as a:
-            a.write(1, 'foo')
-            a.write(2, 'bar')
+            a.write('foo', 1)
+            a.write('bar', 2)
         s.write('bar', 'foo')
 
 Writing into a closed group will raise an exception, which should not be
