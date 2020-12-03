@@ -24,7 +24,7 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install pytest
+        pip install pytest six
     - name: Install python2 dependencies
       if: ${{ matrix.python-version == 2.7 }}
       run: pip install enum34
