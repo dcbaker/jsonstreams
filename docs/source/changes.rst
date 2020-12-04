@@ -1,6 +1,19 @@
 Changes
 =======
 
+next
+------
+
+New Features
+
+- Internally use the JSONEncoder's `iterencode` rather than `encode` for memory
+  efficiency.  This makes little difference for the default built-in `json`'s
+  JSONEncoder, but a custom JSONEncoder that emits large objects in small output
+  chunks can now pass this memory efficiency all the way through jsonstreams,
+  allowing arbitrarily large elements to be emitted in bounded memory.
+  (This is not yet implemented for pretty=True.)
+
+
 0.5.0
 ------
 

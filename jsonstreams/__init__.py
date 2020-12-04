@@ -148,6 +148,13 @@ class BaseWriter(object):
             return ' ' * self.baseindent * self.indent
         return ''
 
+    def write_all(self, chunks, indent=False):
+        """Write from an iterator."""
+        if indent:
+            self.fd.write(self._indent())
+        for chunk in chunks:
+            self.raw_write(chunk)
+
     def raw_write(self, value, indent=False, newline=False):
         if indent:
             self.fd.write(self._indent())
@@ -191,20 +198,20 @@ class ObjectWriter(BaseWriter):
         if not isinstance(key, (six.text_type, six.binary_type)):
             raise InvalidTypeError('Only string or bytes types can be used as '
                                    'keys in JSON objects')
-        self.raw_write(self.encoder.encode(key), indent=self.indent)
+        self.write_all(self.encoder.iterencode(key), indent=self.indent)
         self.raw_write(': ')
 
     def _write_no_comma(self, key, value):  # pylint: disable=arguments-differ
         """Write without a comma."""
         self.write_key(key)
-        self.raw_write(self.encoder.encode(value))
+        self.write_all(self.encoder.iterencode(value))
         self.set_comma()
 
     def _write_comma(self, key, value):  # pylint: disable=arguments-differ
         """Write with a comma."""
         self.write_comma_literal()
         self.write_key(key)
-        self.raw_write(self.encoder.encode(value))
+        self.write_all(self.encoder.iterencode(value))
 
     def _pretty_write_no_comma(self, key, value):
         """Write without a comma."""
@@ -245,13 +252,13 @@ class ArrayWriter(BaseWriter):
 
     def _write_no_comma(self, value):  # pylint: disable=arguments-differ
         """Write without a comma."""
-        self.raw_write(self.encoder.encode(value), indent=self.indent)
+        self.write_all(self.encoder.iterencode(value), indent=self.indent)
         self.set_comma()
 
     def _write_comma(self, value):  # pylint: disable=arguments-differ
         """Write with a comma."""
         self.write_comma_literal()
-        self.raw_write(self.encoder.encode(value), indent=self.indent)
+        self.write_all(self.encoder.iterencode(value), indent=self.indent)
 
     def _pretty_write_no_comma(self, value):
         """Write without a comma."""

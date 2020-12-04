@@ -1447,3 +1447,61 @@ class TestArray(object):
                 actual = json.load(f)
 
             assert actual == expected
+
+
+class StreamsAreStringsJSONEncoder(json.encoder.JSONEncoder):
+    """A JSONEncoder that supports file-like objects and treats them as strings."""
+
+    def _emit_stream(self, stream):
+        def _strip_quotes(string):
+            return string[1:-1]
+        chunksize = 4096
+        yield '"'
+        while True:
+            chunk = stream.read(chunksize)
+            if not chunk:
+                break
+            yield _strip_quotes(super(StreamsAreStringsJSONEncoder, self).encode(chunk))
+        yield '"'
+
+    def iterencode(self, value, **args):
+        if hasattr(value, 'read'):
+            return self._emit_stream(value)
+        return super(StreamsAreStringsJSONEncoder, self).iterencode(value, **args)
+
+
+class TestStringStream(object):
+
+    @pytest.fixture(autouse=True)
+    def chdir(self, tmpdir):
+        tmpdir.chdir()
+
+    def test_quotes(self):
+        with open('string_data', 'w') as f:
+            f.write('The "thing" thing')
+
+        with jsonstreams.Stream(jsonstreams.Type.object, filename='foo', encoder=StreamsAreStringsJSONEncoder) as s:
+            with open('string_data', 'r') as f:
+                s.write('foo', f)
+
+        with open('foo', 'r') as f:
+            assert f.read() == '{"foo": "The \\"thing\\" thing"}'
+
+    def test_memory_usage(self):
+        resource = pytest.importorskip("resource")
+
+        memory_at_start = resource.getrusage(resource.RUSAGE_SELF).ru_maxrss
+        if memory_at_start < 1:
+            pytest.skip("No maxrss rusage")
+
+        file_size = memory_at_start * 3
+        with open('string_data', 'w') as f:
+            for _ in range(file_size):
+                f.write("x" * 1024)
+
+        with jsonstreams.Stream(jsonstreams.Type.object, filename='foo', encoder=StreamsAreStringsJSONEncoder) as s:
+            with open('string_data', 'r') as f:
+                s.write('large file', f)
+
+        memory_at_end = resource.getrusage(resource.RUSAGE_SELF).ru_maxrss
+        assert memory_at_end < file_size
