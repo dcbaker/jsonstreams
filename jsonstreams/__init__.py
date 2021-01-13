@@ -562,7 +562,7 @@ class Stream(object):
         if filename:
             self.__close_fd = True
         elif close_fd is None:
-            warnings.warn("The current default behavior is False, but in "
+            warnings.warn("The current default behavior is True, but in "
                           "jsonstreams 1.0 the default behavior of "
                           "close_fd will change to False",
                           DeprecationWarning)
