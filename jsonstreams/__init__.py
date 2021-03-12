@@ -516,8 +516,11 @@ class Array(object):
 class Type(enum.Enum):
     """The type of object to write."""
 
-    object = 1
-    array = 2
+    # Yes, these names are not valid, they should be `OBJECT` and `ARRAY` but
+    # it would be an API breaking change to alter them. I may do that for 1.0,
+    # but not until then.
+    object = 1  # pylint: disable=invalid-name
+    array = 2   # pylint: disable=invalid-name
 
 
 class Stream(object):
