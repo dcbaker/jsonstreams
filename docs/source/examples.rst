@@ -14,7 +14,7 @@ As an object with a filename:
 
     import jsonstreams
 
-    with jsonstreams.Stream(jsonstreams.Type.object, filename='foo') as f:
+    with jsonstreams.Stream(jsonstreams.Type.OBJECT, filename='foo') as f:
         f.write('foo', 1)
         with f.subobject('bar') as b:
             b.iterwrite((str(s), s) for s in range(5))
@@ -33,7 +33,7 @@ As an array with an fd:
     import jsonstreams
        
     with bz2.open('foo') as f:
-        with jsonstreams.Stream(jsonstreams.Type.array, fd=f) as s:
+        with jsonstreams.Stream(jsonstreams.Type.ARRAY, fd=f) as s:
             s.write('foo')
             s.write('bar')
             with s.subobject() as b:
@@ -72,6 +72,6 @@ using a :py:func:`functools.partial`.
             return list(obj)
         return obj
 
-    with jsonstreams.Stream(jsonstreams.Type.object, filename='foo',
+    with jsonstreams.Stream(jsonstreams.Type.OBJECT, filename='foo',
                             encoder=partial(JSONEncoder, default=my_encoder)):
         s.write('foo', {'foo', 'bar'})

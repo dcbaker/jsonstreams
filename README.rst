@@ -54,7 +54,7 @@ A simple example looks like this
 
     import jsonstreams
 
-    with jsonstreams.Stream(jsonstreams.Type.object, filename='foo') as s:
+    with jsonstreams.Stream(jsonstreams.Type.OBJECT, filename='foo') as s:
         s.write('foo', 'bar')
         with s.subobject('a') as a:
             a.write('foo', 1)
@@ -76,6 +76,6 @@ is unnecessary:
     mylist = list(range(10))
     mydict = {a: b for a in range(10) for b in 'abcdefghij'}
 
-    with jsonstreams.Stream(jsonstreams.Type.object, filename='foo') as s:
+    with jsonstreams.Stream(jsonstreams.Type.OBJECT, filename='foo') as s:
         s.write('list', mylist)
         s.write('dict', mydict)

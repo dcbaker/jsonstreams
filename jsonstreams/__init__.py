@@ -37,14 +37,14 @@ Create a Stream instance, which will be either an object (in JSON terminology,
 dict in python terminology), or an array (list in python terminology). Then use
 the write method to write elements into the file.
 
->>> with Stream(Type.array, filename='foo') as s:
+>>> with Stream(Type.ARRAY, filename='foo') as s:
 ...     s.write('foo')
 ...     s.write('bar')
 
 Each element can also open a subelement, either via the subarray() or
 subobject() method.
 
->>> with Stream(Type.array, filename='foo') as s:
+>>> with Stream(Type.ARRAY, filename='foo') as s:
 ...     s.write('foo')
 ...     with s.subobject() as o:
 ...         o.write('1', 'bar')
@@ -52,7 +52,7 @@ subobject() method.
 Any object that can be serialized can be passed (although passing some elements
 as object keys is not supported, and should not be passed).
 
->>> with Stream(Type.object, filename='foo') as s:
+>>> with Stream(Type.OBJECT, filename='foo') as s:
 ...     s.write('foo', {'foo': 'bar'})
 
 It is very important to note that while the Array and Object classes present
@@ -62,7 +62,7 @@ requires two elements, the key and the value. With iteritems Array accepts a
 an iterable returning a single valid item, while Object accepts an iterable
 returning a (key, value) tuple pair.
 
->>> with Stream(Type.object, filename='foo') as s:
+>>> with Stream(Type.OBJECT, filename='foo') as s:
 ...     s.iterwrite(((str(k), k) for k in range(5)))
 ...     with s.subarray('foo') as a:
 ...         a.iterwrite(range(5))
@@ -414,7 +414,7 @@ class Object(object):
         meant for use with generators or the like.
 
         >>> gen = ((str(s), str(k)) for s in range(5) for k in range(5))
-        >>> with Stream(Type.object, filename='foo') as s:
+        >>> with Stream(Type.OBJECT, filename='foo') as s:
         ...     s.iterwrite(gen)
         """
         for key, value in args:
@@ -477,7 +477,7 @@ class Array(object):
         meant for use with generators or the like.
 
         >>> gen = (str(s) for s in range(5))
-        >>> with Stream(Type.array, filename='foo') as s:
+        >>> with Stream(Type.ARRAY, filename='foo') as s:
         ...     s.iterwrite(gen)
         """
         for value in args:
@@ -513,14 +513,21 @@ class Array(object):
         self.close()
 
 
+@enum.unique
 class Type(enum.Enum):
     """The type of object to write."""
 
     # Yes, these names are not valid, they should be `OBJECT` and `ARRAY` but
-    # it would be an API breaking change to alter them. I may do that for 1.0,
-    # but not until then.
+    # it would be an API breaking change to alter them. This will change later,
+    # but for now a deprecation warning is issued.
+    #
+    # `OBJECT` and `ARRAY` have different values than `object` and `array` so
+    # they can can easily be spotted and a deprecation warning can be raised.
+
     object = 1  # pylint: disable=invalid-name
+    OBJECT = 3
     array = 2   # pylint: disable=invalid-name
+    ARRAY = 4
 
 
 class Stream(object):
@@ -551,13 +558,20 @@ class Stream(object):
     """
 
     _types = {
+        Type.OBJECT: Object,
         Type.object: Object,
+        Type.ARRAY: Array,
         Type.array: Array,
     }
 
     def __init__(self, jtype, filename=None, fd=None, indent=None,
                  pretty=False, encoder=json.JSONEncoder, close_fd=None):
         """Initialize the Stream."""
+        if jtype in {Type.object, Type.array}:
+            warnings.warn('The Type.array and Type.object types are deprecated,'
+                          ' please use Type.ARRAY and Type.OBJECT instead',
+                          PendingDeprecationWarning, stacklevel=2)
+
         if not (fd or filename):
             raise RuntimeError(
                 'Must pass exactly one of "filename" or "fd" (got neither)')
@@ -589,7 +603,7 @@ class Stream(object):
         """Write values into the stream.
 
         This method wraps either Object.write or Array.write, depending on
-        whether it was initialzed with the Type.object argument or the
+        whether it was initialzed with the Type.OBJECT argument or the
         Type.array argument.
         """
         self.__inst.write(*args, **kwargs)

@@ -13,6 +13,11 @@ New Features
   allowing arbitrarily large elements to be emitted in bounded memory.
   (This is not yet implemented for pretty=True.)
 
+Deprecation
+
+- Type.array and Type.object have deprecated in favor of Type.ARRAY and
+  Type.OBJECT, respectively. The former will be removed in version 1.0
+
 Bug Fixes:
 
 - Use the JSONEncoder.*_separator values instead of hard coded values

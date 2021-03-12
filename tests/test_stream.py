@@ -41,8 +41,27 @@ class TestStream(object):
     def chdir(self, tmpdir):
         tmpdir.chdir()
 
+    def test_old_object_enum(self):
+        with pytest.deprecated_call():
+            s = jsonstreams.Stream(jsonstreams.Type.object, filename='foo')
+        s.write('foo', 'bar')
+        s.close()
+
+        with open('foo', 'r') as f:
+            assert f.read() == '{"foo": "bar"}'
+
+    def test_old_array_enum(self):
+        with pytest.deprecated_call():
+            s = jsonstreams.Stream(jsonstreams.Type.array, filename='foo')
+        s.write('foo')
+        s.write('bar')
+        s.close()
+
+        with open('foo', 'r') as f:
+            assert f.read() == '["foo", "bar"]'
+
     def test_basic(self):
-        s = jsonstreams.Stream(jsonstreams.Type.object, filename='foo')
+        s = jsonstreams.Stream(jsonstreams.Type.OBJECT, filename='foo')
         s.write('foo', 'bar')
         s.close()
 
@@ -52,41 +71,41 @@ class TestStream(object):
     def test_fd_default_close(self):
         # Default will change in 1.0 to True
         with open('foo', 'w') as f:
-            with jsonstreams.Stream(jsonstreams.Type.object, fd=f) as s:
+            with jsonstreams.Stream(jsonstreams.Type.OBJECT, fd=f) as s:
                 s.write('foo', 'bar')
             assert f.closed
 
     def test_fd_closed_explicit(self):
         # Default will change in 1.0 to True
         with open('foo', 'w') as f:
-            with jsonstreams.Stream(jsonstreams.Type.object, fd=f, close_fd=True) as s:
+            with jsonstreams.Stream(jsonstreams.Type.OBJECT, fd=f, close_fd=True) as s:
                 s.write('foo', 'bar')
             assert f.closed
 
     def test_fd_not_closed_explicit(self):
         # Default will change in 1.0 to True
         with open('foo', 'w') as f:
-            with jsonstreams.Stream(jsonstreams.Type.object, fd=f, close_fd=False) as s:
+            with jsonstreams.Stream(jsonstreams.Type.OBJECT, fd=f, close_fd=False) as s:
                 s.write('foo', 'bar')
             assert not f.closed
 
     def test_fd(self):
         with open('foo', 'w') as f:
-            with jsonstreams.Stream(jsonstreams.Type.object, fd=f, close_fd=False) as s:
+            with jsonstreams.Stream(jsonstreams.Type.OBJECT, fd=f, close_fd=False) as s:
                 s.write('foo', 'bar')
 
         with open('foo', 'r') as f:
             assert f.read() == '{"foo": "bar"}'
 
     def test_context_manager(self):
-        with jsonstreams.Stream(jsonstreams.Type.object, filename='foo') as s:
+        with jsonstreams.Stream(jsonstreams.Type.OBJECT, filename='foo') as s:
             s.write('foo', 'bar')
 
         with open('foo', 'r') as f:
             assert f.read() == '{"foo": "bar"}'
 
     def test_context_manager_sub(self):
-        with jsonstreams.Stream(jsonstreams.Type.object, filename='foo') as s:
+        with jsonstreams.Stream(jsonstreams.Type.OBJECT, filename='foo') as s:
             with s.subarray('foo') as a:
                 with a.subarray() as b:
                     with b.subobject() as c:
@@ -94,7 +113,7 @@ class TestStream(object):
                             pass
 
     def test_sub(self):
-        s = jsonstreams.Stream(jsonstreams.Type.object, filename='foo')
+        s = jsonstreams.Stream(jsonstreams.Type.OBJECT, filename='foo')
         a = s.subarray('foo')
         b = a.subarray()
         c = b.subobject()
@@ -106,7 +125,7 @@ class TestStream(object):
         s.close()
 
     def test_write_two(self):
-        with jsonstreams.Stream(jsonstreams.Type.object, filename='foo') as s:
+        with jsonstreams.Stream(jsonstreams.Type.OBJECT, filename='foo') as s:
             s.write('foo', 'bar')
             s.write('bar', 'foo')
 
@@ -114,7 +133,7 @@ class TestStream(object):
             assert f.read() == '{"foo": "bar", "bar": "foo"}'
 
     def test_subobject(self):
-        with jsonstreams.Stream(jsonstreams.Type.object, filename='foo') as s:
+        with jsonstreams.Stream(jsonstreams.Type.OBJECT, filename='foo') as s:
             s.write('foo', 'bar')
             with s.subobject('bar') as b:
                 b.write('1', 'foo')
@@ -123,7 +142,7 @@ class TestStream(object):
             assert f.read() == '{"foo": "bar", "bar": {"1": "foo"}}'
 
     def test_subarray(self):
-        with jsonstreams.Stream(jsonstreams.Type.array, filename='foo') as s:
+        with jsonstreams.Stream(jsonstreams.Type.ARRAY, filename='foo') as s:
             s.write('foo')
             with s.subarray() as b:
                 b.write(1)
@@ -133,7 +152,7 @@ class TestStream(object):
             assert f.read() == '["foo", [1, 2]]'
 
     def test_encoder_indent(self):
-        with jsonstreams.Stream(jsonstreams.Type.object, filename='foo',
+        with jsonstreams.Stream(jsonstreams.Type.OBJECT, filename='foo',
                                 indent=4) as s:
             s.write('oink', {'bar': {'b': 0}})
 
@@ -150,7 +169,7 @@ class TestStream(object):
             }""")
 
     def test_pretty(self):
-        with jsonstreams.Stream(jsonstreams.Type.array, filename='foo',
+        with jsonstreams.Stream(jsonstreams.Type.ARRAY, filename='foo',
                                 indent=4, pretty=True) as s:
             s.write({'bar': {"b": 0}})
             s.write({'fob': {"f": 0}})
@@ -184,7 +203,7 @@ class TestStream(object):
 
             def test_basic(self):
                 with jsonstreams.Stream(
-                        jsonstreams.Type.array, filename='foo') as s:
+                        jsonstreams.Type.ARRAY, filename='foo') as s:
                     s.iterwrite(range(5))
 
                 with open('foo', 'r') as f:
@@ -194,7 +213,7 @@ class TestStream(object):
 
             def test_mixed(self):
                 with jsonstreams.Stream(
-                        jsonstreams.Type.array, filename='foo') as s:
+                        jsonstreams.Type.ARRAY, filename='foo') as s:
                     s.iterwrite(range(5))
                     s.write('a')
 
@@ -212,7 +231,7 @@ class TestStream(object):
 
             def test_basic(self):
                 with jsonstreams.Stream(
-                        jsonstreams.Type.object, filename='foo') as s:
+                        jsonstreams.Type.OBJECT, filename='foo') as s:
                     s.iterwrite(
                         ((str(s), k) for s in range(5) for k in range(5)))
 
@@ -223,7 +242,7 @@ class TestStream(object):
 
             def test_mixed(self):
                 with jsonstreams.Stream(
-                        jsonstreams.Type.object, filename='foo') as s:
+                        jsonstreams.Type.OBJECT, filename='foo') as s:
                     s.iterwrite(
                         ((str(s), k) for s in range(5) for k in range(5)))
                     s.write("6", 'a')
@@ -1510,7 +1529,7 @@ class TestStringStream(object):
         with open('string_data', 'w') as f:
             f.write('The "thing" thing')
 
-        with jsonstreams.Stream(jsonstreams.Type.object, filename='foo', encoder=StreamsAreStringsJSONEncoder) as s:
+        with jsonstreams.Stream(jsonstreams.Type.OBJECT, filename='foo', encoder=StreamsAreStringsJSONEncoder) as s:
             with open('string_data', 'r') as f:
                 s.write('foo', f)
 
@@ -1529,7 +1548,7 @@ class TestStringStream(object):
             for _ in range(file_size):
                 f.write("x" * 1024)
 
-        with jsonstreams.Stream(jsonstreams.Type.object, filename='foo', encoder=StreamsAreStringsJSONEncoder) as s:
+        with jsonstreams.Stream(jsonstreams.Type.OBJECT, filename='foo', encoder=StreamsAreStringsJSONEncoder) as s:
             with open('string_data', 'r') as f:
                 s.write('large file', f)
 

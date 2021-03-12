@@ -38,7 +38,7 @@ Exceptions
 
     .. code-block:: python
 
-        with jsonstreams.Stream(Type.object, filename='foo') as s:
+        with jsonstreams.Stream(Type.OBJECT, filename='foo') as s:
             with s.subobject('bar') as b:
                 s.write('foo', 'bar')
         ModifyWrongStreamError
@@ -63,7 +63,7 @@ Exceptions
 
     .. code-block:: python
 
-        with jsonstreams.Stream(Type.object, filename='foo') as s:
+        with jsonstreams.Stream(Type.OBJECT, filename='foo') as s:
             with s.subobject(1) as b:
         InvalidTypeError
 
@@ -78,7 +78,7 @@ Exceptions
 
     .. code-block:: python
 
-        with jsonstreams.Stream(Type.object, filename='foo') as s:
+        with jsonstreams.Stream(Type.OBJECT, filename='foo') as s:
             with s.subobject(1) as b:
                 b.write('foo', 'bar)
             b.write('foo', 'bar)
@@ -93,11 +93,25 @@ Classes
 
     This is an enum that provides valid types for the Stream class.
 
+    .. py:attribute:: OBJECT
+
+        A JSON object
+
+    .. py:attribute:: ARRAY
+
+        A JSON array
+
     .. py:attribute:: object
+
+        .. deprecated:: 0.6
+            Use the OBJECT attribute instead.
 
         A JSON object
 
     .. py:attribute:: array
+
+        .. deprecated:: 0.6
+            Use the ARRAY attribute instead.
 
         A JSON array
 
@@ -130,7 +144,7 @@ Classes
 
     .. code-block:: python
 
-        with jsonwriter.Stream(jsonstreams.Type.array, filename='foo') as s:
+        with jsonwriter.Stream(jsonstreams.Type.ARRAY, filename='foo') as s:
             s.write('foo')
 
     .. note::
@@ -156,19 +170,19 @@ Classes
     .. py:method:: write
 
         This method will differ in signature depending on whether jtype is
-        Type.array or Type.object.
+        Type.ARRAY or Type.OBJECT.
 
-        If Type.array then this method is an alias for :py:meth:`.Array.write`.
+        If Type.ARRAY then this method is an alias for :py:meth:`.Array.write`.
         If Type.'object then this method is an alias for :py:meth:`.Object.write`.
 
     .. py:method:: iterwrite
 
         This method will differ in signature depending on whether jtype is
-        Type.object or Type.array.
+        Type.OBJECT or Type.ARRAY.
 
-        If Type.array then this method is an alias for
+        If Type.ARRAY then this method is an alias for
         :py:meth:`.Array.iterwrite`.
-        If Type.object then this method is an alias for
+        If Type.OBJECT then this method is an alias for
         :py:meth:`.Object.iterwrite`.
 
     .. py:method:: close
@@ -180,7 +194,7 @@ Classes
     .. py:method:: subobject
 
         This method will differ in signature depending on whether jtype is
-        Type.object or Type.array.
+        Type.OBJECT or Type.ARRAY.
 
         This method will open a new object in the stream by calling either
         :py:meth:`.Object.subobject` or :py:meth:`.Array.subobject`
@@ -188,7 +202,7 @@ Classes
     .. py:method:: subarray
 
         This method will differ in signature depending on whether jtype is
-        Type.object or Type.array.
+        Type.OBJECT or Type.ARRAY.
 
         This method will open a new array in the stream by calling either
         :py:meth:`.Object.subarray` or :py:meth:`.Array.subarray`
@@ -253,7 +267,7 @@ Classes
 
         .. code-block:: python
 
-            with jsonstreams.Stream(Type.object, filename='foo') as s:
+            with jsonstreams.Stream(Type.OBJECT, filename='foo') as s:
                 s.iterwrite((str(s), s) for s in range(5))
 
         :param args: An iterator returning key value pairs
@@ -324,7 +338,7 @@ Classes
 
         .. code-block:: python
 
-            with jsonstreams.Stream(Type.object, filename='foo') as s:
+            with jsonstreams.Stream(Type.OBJECT, filename='foo') as s:
                 s.iterwrite(range(10, step=2))
 
         :param args: An iterator returning key value pairs
