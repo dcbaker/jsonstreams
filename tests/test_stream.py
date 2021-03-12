@@ -1,5 +1,5 @@
 # encoding=utf-8
-# Copyright © 2016 Dylan Baker
+# Copyright © 2016,2021 Dylan Baker
 
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -252,6 +252,20 @@ class TestObject(object):
 
         with open('foo', 'r') as f:
             assert f.read() == '{}'
+
+    def test_encoder_custom_key_separator(self):
+        """Test overrides to the encoder separators are handled correctly.
+
+        There are a few places in JSONstreams where we have to write the
+        separators manually, in those cases we want to ensure that we're using
+        the custom separators, instead of hardcoded ones.
+        """
+        with open('foo', 'w') as f:
+            with jsonstreams.Object(f, 0, 0, json.JSONEncoder(separators=(',', ':'))) as s:
+                s.write('foo', 'bar')
+
+        with open('foo', 'r') as f:
+            assert f.read() == '{"foo":"bar"}'
 
     class TestWrite(object):
 
@@ -852,6 +866,21 @@ class TestArray(object):
 
         with open('foo', 'r') as f:
             assert f.read() == '['
+
+    def test_encoder_custom_key_separator(self):
+        """Test overrides to the encoder separators are handled correctly.
+
+        There are a few places in JSONstreams where we have to write the
+        separators manually, in those cases we want to ensure that we're using
+        the custom separators, instead of hardcoded ones.
+        """
+        with open('foo', 'w') as f:
+            with jsonstreams.Array(f, 0, 0, json.JSONEncoder(separators=(',', ':'))) as s:
+                s.write('foo')
+                s.write('bar')
+
+        with open('foo', 'r') as f:
+            assert f.read() == '["foo","bar"]'
 
     def test_context_manager(self):
         with open('foo', 'w') as f:

@@ -13,6 +13,10 @@ New Features
   allowing arbitrarily large elements to be emitted in bounded memory.
   (This is not yet implemented for pretty=True.)
 
+Bug Fixes:
+
+- Use the JSONEncoder.*_separator values instead of hard coded values
+  (`#35 <https://github.com/dcbaker/jsonstreams/issues/35>`_)
 
 0.5.0
 ------
