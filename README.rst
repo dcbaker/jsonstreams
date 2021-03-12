@@ -10,7 +10,7 @@ JSONStreams
 .. image:: https://badge.fury.io/py/jsonstreams.svg
     :target: https://badge.fury.io/py/jsonstreams
 
-.. image:: https://ci.appveyor.com/api/projects/status/ocrt9nol8kn3pm1t/branch/master?svg=true
+.. image:: https://ci.appveyor.com/api/projects/status/ocrt9nol8kn3pm1t/branch/main?svg=true
     :target: https://ci.appveyor.com/project/dcbaker/jsonstreams
     :alt: Appveyor CI Status
 
