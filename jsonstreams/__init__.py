@@ -1,5 +1,5 @@
 # encoding=utf-8
-# Copyright © 2016-2017,2020 Dylan Baker
+# Copyright © 2016-2017,2020-2021 Dylan Baker
 
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -141,7 +141,10 @@ class BaseWriter(object):
             self.write_comma_literal = functools.partial(
                 self.raw_write, ',', newline=True)
         else:
-            self.write_comma_literal = functools.partial(self.raw_write, ', ')
+            # Use encoder.item_separator here, to correctly handle a user
+            # passing an encoder with overriden separators
+            self.write_comma_literal = functools.partial(
+                self.raw_write, self.encoder.item_separator)
 
     def _indent(self):
         if self.indent:
@@ -199,7 +202,9 @@ class ObjectWriter(BaseWriter):
             raise InvalidTypeError('Only string or bytes types can be used as '
                                    'keys in JSON objects')
         self.write_all(self.encoder.iterencode(key), indent=self.indent)
-        self.raw_write(': ')
+        # Use the encoder key_separator here for consistancy with overriden
+        # values
+        self.raw_write(self.encoder.key_separator)
 
     def _write_no_comma(self, key, value):  # pylint: disable=arguments-differ
         """Write without a comma."""
