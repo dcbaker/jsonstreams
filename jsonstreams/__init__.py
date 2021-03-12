@@ -1,4 +1,5 @@
 # encoding=utf-8
+# SPDX-license-identifier: MIT
 # Copyright © 2016-2017,2020-2021 Dylan Baker
 
 # Permission is hereby granted, free of charge, to any person obtaining a copy
