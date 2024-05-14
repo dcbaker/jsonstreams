@@ -7,6 +7,9 @@ next
 - Drop support for python 2.x
 - Drop enum34 requirement
 - Drop use of six package
+- Drop incorrect type annotations
+- Drop support for python < 3.8
+- Add support for Python 3.10, 3.11, 3.12
 
 0.6.0
 ------
