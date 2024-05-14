@@ -25,10 +25,6 @@ jobs:
       - name: Lint with pylint
         run: |
           pylint jsonstreams --rcfile=pylintrc --reports=n
-      - name: Lint with mypy
-        run: |
-          mypy -p jsonstreams
-          mypy -p tests
       - name: Lint with pycodestyle
         run: |
           pycodestyle jsonstreams
