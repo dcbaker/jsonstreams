@@ -573,7 +573,7 @@ class Stream:
         if fd and filename:
             raise RuntimeError(
                 'Must pass exactly one of "filename" or "fd" (got both)')
-        self.__fd = fd or open(filename, 'w')
+        self.__fd = fd or open(filename, 'w')  # pylint: disable=consider-using-with,unspecified-encoding
 
         # If we didn't open the file, we need to check if we own the fd, or
         # not.
